@@ -1793,10 +1793,17 @@
           return;
         }
 
-        // 二级标题
+        // 二级标题 (## 开头)
         if (line.match(/^##\s/) && !line.includes('⚠️')) {
           flushBlock();
           macroTitle = line.replace(/^##\s*/, '').replace(/\*\*/g, '');
+          return;
+        }
+
+        // 中文编号标题 (如 八、龙虎榜 | 九、汽车行业数据)
+        if (line.match(/^[一二三四五六七八九十]、/)) {
+          flushBlock();
+          macroTitle = line.replace(/\*\*/g, '');
           return;
         }
 
