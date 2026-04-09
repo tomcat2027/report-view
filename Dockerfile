@@ -1,7 +1,7 @@
 FROM nginx:alpine
-RUN apk add --no-cache bash envsubst
+RUN apk add --no-cache bash
 COPY . /usr/share/nginx/html
-RUN PASSWORD=${PASSWORD:-report2026} && \
-    envsubst '${PASSWORD}' < /usr/share/nginx/html/index.html > /tmp/index.html && \
-    mv /tmp/index.html /usr/share/nginx/html/index.html
-EXPOSE 80
+RUN chmod +x /docker-entrypoint.d/*.sh 2>/dev/null || true
+COPY docker-entrypoint.sh /docker-entrypoint.sh
+ENTRYPOINT ["/docker-entrypoint.sh"]
+CMD ["nginx", "-g", "daemon off;"]
