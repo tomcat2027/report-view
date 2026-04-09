@@ -3,375 +3,803 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>报告中心</title>
+  <title>AI财经简报</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
   <style>
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ===== 字体系统 ===== */
+    /*
+     * 标题字体: Crimson Pro - 优雅衬线，适合金融报告的权威感
+     * 正文字体: Source Sans 3 - 高可读性无衬线，优化屏幕显示
+     * 数据字体: JetBrains Mono - 代码和数据，等宽清晰
+     */
 
     :root {
-      --bg: #fafaf9;
-      --text: #1c1917;
-      --text-light: #78716c;
-      --accent: #b91c1c;
-      --accent-light: #fef2f2;
-      --border: #e7e5e4;
-      --card: #ffffff;
+      /* 主色调 - 温暖的编辑风格 */
+      --bg: #fafaf8;                    /* 米白纸张色 */
+      --bg-sidebar: #1c1917;           /* 深炭黑侧边栏 */
+      --text: #292524;                  /* 深棕正文 */
+      --text-light: #78716c;           /* 次级文字 */
+      --text-muted: #a8a29e;           /* 弱化文字 */
+      --text-sidebar: #e7e5e4;          /* 侧边栏文字 */
+      --text-sidebar-muted: #a8a29e;    /* 侧边栏次级 */
+      --accent: #b45309;                /* 琥珀色强调 - 金融感 */
+      --accent-light: #fef3c7;          /* 强调背景 */
+      --border: #e7e5e4;                /* 边框 */
+      --border-dark: #44403c;          /* 侧边栏边框 */
+      --card: #ffffff;                 /* 卡片背景 */
+      --card-hover: #fafaf8;           /* 卡片悬停 */
+
+      /* 间距系统 */
+      --space-xs: 4px;
+      --space-sm: 8px;
+      --space-md: 16px;
+      --space-lg: 24px;
+      --space-xl: 32px;
+      --space-2xl: 48px;
+      --space-3xl: 64px;
+
+      /* 阅读优化 */
+      --line-height: 1.85;              /* 宽松行高，阅读舒适 */
+      --reading-width: 900px;          /* 加宽阅读宽度 */
+
+      /* 字体大小 */
+      --text-xs: 11px;
+      --text-sm: 13px;
+      --text-base: 16px;
+      --text-lg: 18px;
+      --text-xl: 22px;
+      --text-2xl: 28px;
+      --text-3xl: 36px;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      font-size: 16px;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
     }
 
     body {
-      font-family: 'Noto Sans SC', sans-serif;
+      font-family: 'Source Sans 3', -apple-system, BlinkMacSystemFont, sans-serif;
       background: var(--bg);
       color: var(--text);
-      line-height: 1.8;
-      font-weight: 300;
-      -webkit-font-smoothing: antialiased;
+      line-height: var(--line-height);
+      font-weight: 400;
     }
 
-    ::selection { background: rgba(185, 28, 28, 0.1); }
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-thumb { background: var(--border); }
+    ::selection {
+      background: rgba(180, 83, 9, 0.15);
+    }
 
-    /* ==================== 密码页 ==================== */
+    ::-webkit-scrollbar {
+      width: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--border);
+      border-radius: 3px;
+    }
+
+    /* ===== 密码页 ===== */
     .password-page {
       min-height: 100vh;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: 24px;
+      padding: var(--space-lg);
+      background: linear-gradient(135deg, #1c1917 0%, #292524 100%);
     }
-
-    .password-page.hidden { display: none; }
 
     .password-box {
       text-align: center;
-      max-width: 320px;
+      max-width: 360px;
+      width: 100%;
     }
 
     .password-box h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 22px;
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: var(--text-2xl);
       font-weight: 600;
-      margin-bottom: 24px;
+      color: #ffffff;
+      margin-bottom: var(--space-xs);
+      letter-spacing: -0.02em;
+    }
+
+    .password-box p {
+      font-size: var(--text-sm);
+      color: var(--text-sidebar-muted);
+      margin-bottom: var(--space-xl);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
     }
 
     .password-box input {
       width: 100%;
-      padding: 14px 16px;
-      border: 1.5px solid var(--border);
-      border-radius: 4px;
-      font-size: 15px;
+      padding: var(--space-md) var(--space-lg);
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      font-size: var(--text-base);
       font-family: inherit;
       text-align: center;
+      background: rgba(255,255,255,0.05);
+      color: #ffffff;
       outline: none;
-      margin-bottom: 12px;
-      transition: border-color 0.2s;
+      margin-bottom: var(--space-md);
+      transition: all 0.2s ease;
+      letter-spacing: 0.1em;
     }
 
-    .password-box input:focus { border-color: var(--accent); }
+    .password-box input::placeholder {
+      color: var(--text-sidebar-muted);
+      letter-spacing: 0.05em;
+    }
+
+    .password-box input:focus {
+      border-color: var(--accent);
+      background: rgba(255,255,255,0.08);
+      box-shadow: 0 0 0 3px rgba(180, 83, 9, 0.2);
+    }
 
     .password-box button {
       width: 100%;
-      padding: 12px 24px;
-      background: var(--text);
-      color: white;
+      padding: var(--space-md) var(--space-lg);
+      background: var(--accent);
+      color: #ffffff;
       border: none;
-      border-radius: 4px;
-      font-size: 14px;
+      border-radius: 6px;
+      font-size: var(--text-sm);
       font-family: inherit;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
       cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .password-box button:hover {
+      background: #92400e;
+      transform: translateY(-1px);
+    }
+
+    .password-box button:active {
+      transform: translateY(0);
+    }
+
+    .password-error {
+      color: #ef4444;
+      font-size: var(--text-sm);
+      margin-top: var(--space-md);
+      opacity: 0;
       transition: opacity 0.2s;
     }
 
-    .password-box button:hover { opacity: 0.85; }
-
-    .password-error {
-      color: var(--accent);
-      font-size: 13px;
-      margin-top: 12px;
-      display: none;
+    .password-error.show {
+      opacity: 1;
     }
-
-    .password-error.show { display: block; }
 
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
-      25%, 75% { transform: translateX(-6px); }
-      50% { transform: translateX(6px); }
+      20%, 60% { transform: translateX(-8px); }
+      40%, 80% { transform: translateX(8px); }
     }
 
-    .shake { animation: shake 0.3s ease; }
+    .shake {
+      animation: shake 0.4s ease;
+    }
 
-    /* ==================== 主应用 ==================== */
-    .app { display: none; }
-    .app.visible { display: flex; min-height: 100vh; }
-
-    /* 左侧边栏 */
-    .sidebar {
-      width: 280px;
-      min-width: 280px;
-      background: white;
-      border-right: 1px solid var(--border);
-      padding: 32px 24px;
-      display: flex;
+    /* ===== 主应用 ===== */
+    .app {
+      display: none;
+      min-height: 100vh;
       flex-direction: column;
+    }
+
+    .app.visible {
+      display: flex;
+    }
+
+    /* ===== 顶部导航 ===== */
+    .top-header {
+      background: var(--bg-sidebar);
+      border-bottom: 1px solid var(--border-dark);
+      padding: 0 var(--space-xl);
       position: sticky;
       top: 0;
-      height: 100vh;
-      overflow-y: auto;
+      z-index: 100;
     }
 
-    .sidebar-header {
-      margin-bottom: 48px;
-    }
-
-    .sidebar h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: 20px;
-      font-weight: 600;
-      margin-bottom: 4px;
-    }
-
-    .sidebar-subtitle {
-      font-size: 12px;
-      color: var(--text-light);
-      letter-spacing: 1px;
-    }
-
-    /* 侧边栏日期导航 */
-    .sidebar-date-nav {
-      margin-bottom: 40px;
-    }
-
-    .sidebar-date-nav label {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--text-light);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
-    .sidebar-date-nav input[type="date"] {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: 4px;
-      font-size: 14px;
-      font-family: inherit;
-      color: var(--text);
-      background: white;
-      outline: none;
-      cursor: pointer;
-      transition: border-color 0.15s;
-    }
-
-    .sidebar-date-nav input[type="date"]:focus {
-      border-color: var(--accent);
-    }
-
-    /* 侧边栏快捷日期 */
-    .quick-dates {
+    .header-inner {
+      max-width: 1200px;
+      margin: 0 auto;
       display: flex;
-      flex-direction: column;
-      gap: 8px;
-      margin-top: 16px;
+      align-items: center;
+      gap: var(--space-xl);
+      height: 64px;
     }
 
-    .quick-date-btn {
-      padding: 10px 14px;
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 4px;
-      font-size: 13px;
+    .header-brand {
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-md);
+      flex-shrink: 0;
+    }
+
+    .header-brand h1 {
+      font-family: 'Crimson Pro', Georgia, serif;
+      font-size: var(--text-lg);
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+    }
+
+    .header-subtitle {
+      font-size: var(--text-xs);
+      color: var(--text-sidebar-muted);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .header-nav {
+      display: flex;
+      align-items: center;
+      gap: var(--space-xl);
+      flex: 1;
+    }
+
+    .header-date-nav {
+      position: relative;
+    }
+
+    .date-trigger {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 8px 14px;
+      border: 1px solid var(--border-dark);
+      background: transparent;
+      border-radius: 6px;
+      font-size: var(--text-sm);
       font-family: inherit;
+      color: var(--text-sidebar);
       cursor: pointer;
-      color: var(--text-light);
-      text-align: left;
-      transition: all 0.15s;
+      transition: all 0.15s ease;
     }
 
-    .quick-date-btn:hover {
-      border-color: var(--text);
-      color: var(--text);
+    .date-trigger:hover {
+      border-color: var(--text-sidebar-muted);
+    }
+
+    .date-trigger-arrow {
+      font-size: 10px;
+      color: var(--text-sidebar-muted);
+      transition: transform 0.2s ease;
+    }
+
+    .date-trigger.open .date-trigger-arrow {
+      transform: rotate(180deg);
+    }
+
+    .calendar {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: var(--space-md);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: var(--space-sm);
+      min-width: 280px;
+      z-index: 200;
+      display: none;
+    }
+
+    .calendar.open {
+      display: block;
+    }
+
+    .report-tabs {
+      display: flex;
+      gap: var(--space-sm);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-left: auto;
+    }
+
+    /* 日历组件 */
+    .calendar {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid var(--border-dark);
+      border-radius: 8px;
+      padding: var(--space-md);
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: var(--space-sm);
+      min-width: 280px;
+      z-index: 200;
+    }
+
+    .calendar-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: var(--space-md);
+    }
+
+    .calendar-title {
+      font-family: 'Crimson Pro', serif;
+      font-size: var(--text-base);
+      font-weight: 600;
+      color: #ffffff;
+      letter-spacing: 0.02em;
+    }
+
+    .calendar-nav {
+      display: flex;
+      gap: var(--space-xs);
+    }
+
+    .calendar-nav button {
+      width: 28px;
+      height: 28px;
+      border: 1px solid var(--border-dark);
+      background: transparent;
+      border-radius: 6px;
+      color: var(--text-sidebar-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s;
+      font-size: 14px;
+    }
+
+    .calendar-nav button:hover {
+      border-color: var(--text-sidebar-muted);
+      color: #ffffff;
+    }
+
+    .calendar-weekdays {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+      margin-bottom: var(--space-xs);
+    }
+
+    .calendar-weekday {
+      font-size: 10px;
+      letter-spacing: 0.05em;
+      color: var(--text-sidebar-muted);
+      text-align: center;
+      padding: 4px 0;
+      text-transform: uppercase;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 2px;
+    }
+
+    .calendar-day {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--text-sm);
+      color: #d6d3d1;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: all 0.15s;
+      position: relative;
+      font-weight: 500;
+    }
+
+    .calendar-day:hover {
+      background: rgba(255,255,255,0.12);
+      color: #ffffff;
+    }
+
+    .calendar-day.other-month {
+      color: #78716c;
+      opacity: 0.6;
+    }
+
+    .calendar-day.today {
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .calendar-day.today::after {
+      content: '';
+      position: absolute;
+      bottom: 4px;
+      width: 4px;
+      height: 4px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .calendar-day.has-report {
+      color: #fef3c7;
+      background: rgba(180, 83, 9, 0.4);
+      font-weight: 600;
+    }
+
+    .calendar-day.has-report:hover {
+      background: rgba(180, 83, 9, 0.6);
+    }
+
+    .calendar-day.selected {
+      background: var(--accent) !important;
+      color: #ffffff !important;
+    }
+
+    .calendar-day.selected::after {
+      display: none;
+    }
+
+    .calendar-legend {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-top: var(--space-md);
+      padding-top: var(--space-sm);
+      border-top: 1px solid var(--border-dark);
+    }
+
+    .calendar-legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 10px;
+      color: var(--text-sidebar-muted);
+    }
+
+    .calendar-legend-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .calendar-legend-dot.has-report {
+      background: rgba(180, 83, 9, 0.6);
+    }
+
+    .calendar-legend-dot.today {
+      background: var(--accent);
     }
 
     .quick-date-btn.active {
-      background: var(--text);
-      border-color: var(--text);
-      color: white;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
     }
 
-    /* 侧边栏类型选择 */
-    .sidebar-types {
-      margin-bottom: 40px;
-    }
-
-    .sidebar-types label {
-      display: block;
-      font-size: 10px;
-      letter-spacing: 2px;
-      color: var(--text-light);
-      text-transform: uppercase;
-      margin-bottom: 12px;
-    }
-
+    /* 类型选择 */
     .type-btn {
-      display: block;
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 4px;
-      font-size: 13px;
+      padding: 8px 16px;
+      border: 1px solid var(--border-dark);
+      background: transparent;
+      border-radius: 6px;
+      font-size: var(--text-sm);
       font-family: inherit;
+      color: var(--text-sidebar-muted);
       cursor: pointer;
-      color: var(--text-light);
-      transition: all 0.15s;
-      margin-bottom: 8px;
-      text-align: left;
+      transition: all 0.15s ease;
     }
 
-    .type-btn:hover { border-color: var(--text); color: var(--text); }
+    .type-btn:hover {
+      border-color: var(--text-sidebar-muted);
+      color: var(--text-sidebar);
+    }
+
     .type-btn.active {
-      background: var(--text);
-      border-color: var(--text);
-      color: white;
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #ffffff;
     }
 
-    /* 侧边栏锁定 */
-    .sidebar-lock {
-      margin-top: auto;
-    }
-
+    /* 锁定按钮 */
     .lock-btn {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      background: white;
-      border-radius: 4px;
-      font-size: 13px;
+      padding: 8px 14px;
+      border: 1px solid var(--border-dark);
+      background: transparent;
+      border-radius: 6px;
+      font-size: var(--text-sm);
       font-family: inherit;
+      color: var(--text-sidebar-muted);
       cursor: pointer;
-      color: var(--text-light);
-      transition: all 0.15s;
+      transition: all 0.15s ease;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: var(--space-sm);
     }
 
     .lock-btn:hover {
+      border-color: #ef4444;
+      color: #ef4444;
+    }
+
+    /* GitHub 链接 */
+    .github-link {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 8px 14px;
+      border: 1px solid var(--border-dark);
+      border-radius: 6px;
+      font-size: var(--text-xs);
+      color: var(--text-sidebar-muted);
+      text-decoration: none;
+      transition: all 0.15s ease;
+    }
+
+    .github-link:hover {
+      border-color: #ffffff;
+      color: #ffffff;
+      background: rgba(255,255,255,0.05);
+    }
+
+    .github-icon {
+      flex-shrink: 0;
+    }
+
+    /* ===== 主内容区 ===== */
+    .main-content {
+      padding: var(--space-2xl) var(--space-xl);
+    }
+
+    #reportContainer {
+      max-width: var(--reading-width);
+      margin: 0 auto;
+    }
+
+    /* ===== 内容区工具栏（日期选择器） ===== */
+    .content-toolbar {
+      display: flex;
+      align-items: center;
+      gap: var(--space-lg);
+      margin-bottom: var(--space-lg);
+      position: relative;
+    }
+
+    .content-toolbar .date-trigger {
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+      padding: 10px 16px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      border-radius: 6px;
+      font-size: var(--text-base);
+      font-family: inherit;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      font-weight: 500;
+      flex-shrink: 0;
+    }
+
+    .content-toolbar .date-trigger:hover {
+      border-color: var(--accent);
+    }
+
+    .content-toolbar .calendar {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      margin-top: var(--space-sm);
+      z-index: 200;
+      background: var(--card);
+      border: 1px solid var(--border);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .content-toolbar .date-trigger-arrow {
+      font-size: 10px;
+      color: var(--text-light);
+      transition: transform 0.2s ease;
+    }
+
+    .content-toolbar .date-trigger.open .date-trigger-arrow {
+      transform: rotate(180deg);
+    }
+
+    /* 日历组件在内容区时文字用深色 */
+    .content-toolbar .calendar-weekday {
+      color: var(--text-light);
+    }
+
+    .content-toolbar .calendar-day {
+      color: var(--text);
+    }
+
+    .content-toolbar .calendar-day:hover {
+      background: var(--bg);
+    }
+
+    .content-toolbar .calendar-day.other-month {
+      color: var(--text-muted);
+    }
+
+    .content-toolbar .calendar-day.today {
+      color: var(--accent);
+    }
+
+    .content-toolbar .calendar-day.has-report {
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    .content-toolbar .calendar-day.has-report:hover {
+      background: var(--accent);
+      color: white;
+    }
+
+    .content-toolbar .calendar-day.selected {
+      background: var(--accent) !important;
+      color: #ffffff !important;
+    }
+
+    .content-toolbar .calendar-title {
+      color: var(--text);
+    }
+
+    .content-toolbar .calendar-nav button {
+      border-color: var(--border);
+      color: var(--text-light);
+    }
+
+    .content-toolbar .calendar-nav button:hover {
       border-color: var(--accent);
       color: var(--accent);
     }
 
-    /* 内容区 */
-    .main-content {
-      flex: 1;
-      padding: 48px 64px 80px;
-      display: flex;
-      justify-content: center;
+    .content-toolbar .calendar-legend {
+      border-top-color: var(--border);
     }
 
-    #reportContainer {
-      width: 100%;
-      max-width: 800px;
+    .content-toolbar .calendar-legend-item {
+      color: var(--text-light);
     }
 
-    /* 报告类型（移动端保留） */
-    .report-types {
-      display: none;
-    }
-
-    /* 加载 */
+    /* ===== 加载状态 ===== */
     .loading {
       display: flex;
       justify-content: center;
-      padding: 80px;
+      padding: var(--space-3xl);
     }
 
     .spinner {
       width: 24px;
       height: 24px;
       border: 2px solid var(--border);
-      border-top-color: var(--text);
+      border-top-color: var(--accent);
       border-radius: 50%;
-      animation: spin 0.7s linear infinite;
+      animation: spin 0.8s linear infinite;
     }
 
-    @keyframes spin { to { transform: rotate(360deg); } }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
 
-    /* 空状态 */
+    /* ===== 空状态 ===== */
     .empty-state {
       text-align: center;
-      padding: 80px 24px;
+      padding: var(--space-3xl);
       color: var(--text-light);
     }
 
-    .empty-state h3 {
-      font-size: 18px;
-      font-weight: 400;
-      margin-bottom: 8px;
+    .empty-state-icon {
+      font-size: 48px;
+      margin-bottom: var(--space-md);
+      opacity: 0.5;
     }
 
-    /* ==================== 研究报告样式 ==================== */
-    .research-report {}
+    .empty-state h3 {
+      font-family: 'Crimson Pro', serif;
+      font-size: var(--text-xl);
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: var(--space-sm);
+    }
 
-    /* 统计区 */
+    .empty-state p {
+      font-size: var(--text-sm);
+      color: var(--text-light);
+    }
+
+    /* ===== 研究报告样式 ===== */
+    .research-report {
+      animation: fadeIn 0.5s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* 统计网格 */
     .stats-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-      margin-bottom: 48px;
+      gap: var(--space-md);
+      margin-bottom: var(--space-2xl);
+      align-items: stretch;
     }
 
     .stat-card {
       background: var(--card);
       border: 1px solid var(--border);
-      padding: 24px;
+      padding: var(--space-lg);
       text-align: center;
-      position: relative;
-      transition: all 0.3s ease;
+      border-radius: 8px;
+      transition: all 0.2s ease;
+      min-height: 100px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
 
     .stat-card:hover {
       border-color: var(--accent);
       transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.06);
     }
 
     .stat-value {
-      font-size: 32px;
-      font-weight: 700;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--text-2xl);
+      font-weight: 500;
       color: var(--accent);
-      margin-bottom: 4px;
+      margin-bottom: var(--space-xs);
+      letter-spacing: -0.02em;
     }
 
     .stat-card:nth-child(3) .stat-value {
-      color: var(--success);
+      color: #059669;
     }
 
     .stat-label {
-      font-size: 11px;
-      letter-spacing: 2px;
+      font-size: var(--text-xs);
+      letter-spacing: 0.1em;
       color: var(--text-light);
       text-transform: uppercase;
+      font-weight: 500;
     }
 
-    /* 信号区块标题 */
+    /* 区块标题 */
     .section-header {
       display: flex;
       align-items: center;
-      gap: 16px;
-      margin-bottom: 32px;
+      gap: var(--space-md);
+      margin-bottom: var(--space-xl);
+      padding-bottom: var(--space-md);
+      border-bottom: 1px solid var(--border);
     }
 
     .section-header h2 {
-      font-size: 14px;
+      font-family: 'Crimson Pro', serif;
+      font-size: var(--text-lg);
       font-weight: 600;
       color: var(--text);
-      letter-spacing: 2px;
+      letter-spacing: -0.01em;
     }
 
     .section-line {
@@ -384,103 +812,70 @@
     .signal-card {
       background: var(--card);
       border: 1px solid var(--border);
-      padding: 24px;
-      margin-bottom: 20px;
-      position: relative;
-      transition: all 0.3s ease;
+      padding: var(--space-xl);
+      margin-bottom: var(--space-lg);
+      border-radius: 8px;
+      transition: all 0.2s ease;
     }
 
     .signal-card:hover {
       border-color: var(--accent);
-      transform: scale(1.01);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
     }
 
     .signal-header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 16px;
+      margin-bottom: var(--space-md);
+      gap: var(--space-md);
     }
 
     .signal-badge {
       background: var(--accent);
-      color: white;
-      padding: 4px 12px;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 1px;
+      color: #ffffff;
+      padding: 6px 14px;
+      font-size: var(--text-xs);
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      border-radius: 4px;
     }
 
     .signal-sector {
-      font-size: 11px;
+      font-size: var(--text-xs);
       color: var(--text-light);
-      letter-spacing: 1px;
+      letter-spacing: 0.05em;
     }
 
     .signal-name {
-      font-size: 18px;
+      font-family: 'Crimson Pro', serif;
+      font-size: var(--text-xl);
       font-weight: 600;
       color: var(--text);
-      margin-bottom: 4px;
+      margin-bottom: var(--space-xs);
     }
 
     .signal-code {
-      font-size: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: var(--text-sm);
       color: var(--text-light);
-      margin-bottom: 16px;
-    }
-
-    /* 证据区块 */
-    .neo-evidence {
-      background: rgba(0, 240, 255, 0.05);
-      border-left: 2px solid var(--accent);
-      padding: 12px;
-      margin-bottom: 16px;
-    }
-
-    .neo-evidence p {
-      font-size: 13px;
-      color: var(--text-light);
-      line-height: 1.6;
-      margin-bottom: 8px;
-    }
-
-    .neo-evidence p:last-child {
-      margin-bottom: 0;
-    }
-
-    .neo-evidence strong {
-      color: var(--accent);
-    }
-
-    /* 风险区块 */
-    .neo-risk {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 11px;
-      color: var(--text-light);
-      margin-top: 12px;
-    }
-
-    .risk::before {
-      content: '⚠';
-      font-size: 10px;
+      margin-bottom: var(--space-lg);
     }
 
     /* 证据区块 */
     .evidence {
-      background: var(--accent-light);
+      background: linear-gradient(135deg, var(--accent-light) 0%, #fffbeb 100%);
       border-left: 3px solid var(--accent);
-      padding: 12px 16px;
-      margin-bottom: 16px;
+      padding: var(--space-md) var(--space-lg);
+      margin-bottom: var(--space-md);
+      border-radius: 0 6px 6px 0;
     }
 
     .evidence p {
-      font-size: 13px;
+      font-size: var(--text-base);
       color: var(--text);
-      line-height: 1.6;
-      margin-bottom: 8px;
+      line-height: var(--line-height);
+      margin-bottom: var(--space-sm);
     }
 
     .evidence p:last-child {
@@ -489,605 +884,298 @@
 
     .evidence strong {
       color: var(--accent);
+      font-weight: 600;
     }
 
-    /* 免责声明 */
-    .disclaimer {
+    /* 风险提示 */
+    .risk {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-sm);
+      font-size: var(--text-sm);
+      color: var(--text-light);
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px dashed var(--border);
+    }
+
+    .risk::before {
+      content: '';
+      flex-shrink: 0;
+      width: 14px;
+      height: 14px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23b45309' stroke='none'%3E%3Cpath d='M12 2L2 22h20L12 2zm0 6v6m0 4v.01'/%3E%3C/svg%3E") no-repeat center;
+      background-size: contain;
+    }
+
+    /* 免责声明 - 统一样式 */
+    .disclaimer,
+    .data-disclaimer {
       background: var(--card);
       border: 1px solid var(--border);
-      padding: 24px;
-      margin-top: 48px;
+      padding: var(--space-xl);
+      margin-top: var(--space-2xl);
+      border-radius: 8px;
       text-align: center;
     }
 
-    .disclaimer h4 {
-      font-size: 12px;
+    .disclaimer h4,
+    .data-disclaimer-title {
+      font-family: 'Crimson Pro', serif;
+      font-size: var(--text-base);
       font-weight: 600;
-      letter-spacing: 2px;
       color: var(--text);
-      margin-bottom: 12px;
+      margin-bottom: var(--space-sm);
+      letter-spacing: 0.05em;
     }
 
-    .disclaimer p {
-      font-size: 12px;
+    .disclaimer p,
+    .data-disclaimer-text {
+      font-size: var(--text-sm);
       color: var(--text-light);
+      line-height: 1.7;
     }
 
-    /* 页脚 */
-    .report-footer {
-      text-align: center;
-      padding: 32px 0;
-      font-size: 11px;
-      letter-spacing: 1px;
-      color: var(--text-light);
+    .data-disclaimer-meta {
+      margin-top: var(--space-md);
+      padding-top: var(--space-md);
+      border-top: 1px solid var(--border);
+      font-size: var(--text-xs);
+      color: var(--text-muted);
+      display: flex;
+      gap: var(--space-lg);
+      justify-content: center;
     }
 
-    /* 入场动画 */
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* ===== 数据报告样式 ===== */
+    .data-report {
+      animation: fadeIn 0.5s ease;
     }
 
-    .animate {
-      animation: fadeIn 0.5s ease-out forwards;
-      opacity: 0;
+    /* 数据区块 */
+    .data-section {
+      margin-bottom: var(--space-2xl);
     }
 
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.2s; }
-    .delay-3 { animation-delay: 0.3s; }
-    .delay-4 { animation-delay: 0.4s; }
+    .data-section-header {
+      display: flex;
+      align-items: center;
+      gap: var(--space-md);
+      margin-bottom: var(--space-lg);
+    }
 
-    /* 响应式 */
+    .data-section-icon {
+      width: 3px;
+      height: 28px;
+      border-radius: 2px;
+      background: var(--accent);
+      flex-shrink: 0;
+    }
+
+    .data-section-title {
+      font-family: 'Crimson Pro', serif;
+      font-size: var(--text-xl);
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .data-section-badge {
+      font-size: var(--text-xs);
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+      margin-left: auto;
+      letter-spacing: 0.05em;
+    }
+
+    /* 内容卡片 */
+    .data-content-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: var(--space-xl);
+    }
+
+    .data-card-title {
+      font-size: var(--text-base);
+      font-weight: 600;
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .data-card-tag {
+      font-size: var(--text-xs);
+      padding: 3px 8px;
+      border-radius: 4px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .data-card-body {
+      font-size: var(--text-base);
+      color: var(--text);
+      line-height: var(--line-height);
+    }
+
+    .data-card-body p {
+      margin-bottom: var(--space-sm);
+    }
+
+    .data-card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .data-card-body strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* 宏观区块 */
+    .data-macro-section {
+      margin-bottom: var(--space-md);
+      padding-left: var(--space-lg);
+      border-left: 2px solid var(--border);
+    }
+
+    .data-macro-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .data-macro-section + .data-macro-section {
+      margin-top: var(--space-md);
+    }
+
+    /* 内容块之间统一间距 */
+    .content-divider {
+      height: var(--space-md);
+    }
+
+    /* 确保段落和列表之间有一致的间距 */
+    .data-card-body > p + ul,
+    .data-card-body > ul + p,
+    .data-card-body > p + p {
+      margin-top: var(--space-sm);
+    }
+
+    .data-macro-title {
+      font-size: var(--text-base);
+      font-weight: 600;
+      margin-bottom: var(--space-sm);
+      color: var(--text);
+    }
+
+    .data-macro-content {
+      font-size: var(--text-base);
+      color: var(--text);
+      line-height: var(--line-height);
+    }
+
+    .data-macro-list {
+      list-style: none;
+      margin-top: var(--space-sm);
+    }
+
+    .data-macro-list li {
+      padding: 6px 0;
+      padding-left: var(--space-md);
+      position: relative;
+      font-size: var(--text-base);
+      color: var(--text);
+      line-height: var(--line-height);
+    }
+
+    .data-macro-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: 600;
+    }
+
+    /* ===== 响应式 ===== */
+    @media (max-width: 1024px) {
+      :root {
+        --reading-width: 100%;
+      }
+    }
+
     @media (max-width: 768px) {
+      .header-inner {
+        flex-wrap: wrap;
+        height: auto;
+        padding: var(--space-md) 0;
+        gap: var(--space-md);
+      }
+
+      .header-nav {
+        flex-wrap: wrap;
+        width: 100%;
+      }
+
+      .header-date-nav {
+        order: 3;
+        width: 100%;
+      }
+
+      .calendar {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        border-radius: 16px 16px 0 0;
+        max-height: 80vh;
+        overflow-y: auto;
+      }
+
+      .main-content {
+        padding: var(--space-lg);
+      }
+
       .stats-grid {
         grid-template-columns: repeat(2, 1fr);
       }
     }
 
-    /* ==================== 数据报告样式 ==================== */
-    .data-report {
-      font-family: 'Noto Sans SC', sans-serif;
-      color: var(--text);
-      line-height: 1.6;
-      font-size: 15px;
-    }
-
-    /* 入场动画 */
-    @keyframes liquidFadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(30px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    .data-report .animate {
-      animation: liquidFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
-      opacity: 0;
-    }
-
-    .data-report .delay-1 { animation-delay: 0.1s; }
-    .data-report .delay-2 { animation-delay: 0.2s; }
-    .data-report .delay-3 { animation-delay: 0.3s; }
-    .data-report .delay-4 { animation-delay: 0.4s; }
-
-    /* 区块 */
-    .data-section {
-      margin-bottom: 36px;
-    }
-
-    .data-section-header {
+    /* ===== 底部 GitHub 图标 ===== */
+    .footer-github {
       display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
+      justify-content: center;
+      padding: var(--space-2xl) 0 var(--space-lg);
     }
 
-    .data-section-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
+    .github-icon-link {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 20px;
-      background: var(--accent-light);
-    }
-
-    .data-section-title {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-    }
-
-    .data-section-badge {
-      font-size: 11px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      background: var(--accent-light);
-      color: var(--accent);
-      font-weight: 500;
-      margin-left: auto;
-    }
-
-    /* 内容卡片 */
-    .data-content-card {
-      background: var(--card);
+      width: 40px;
+      height: 40px;
       border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
-    }
-
-    .data-card-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .data-card-tag {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: var(--accent-light);
-      color: var(--accent);
-      font-weight: 500;
-      font-family: monospace;
-    }
-
-    .data-card-body {
-      font-size: 14px;
+      border-radius: 50%;
       color: var(--text-light);
-      line-height: 1.8;
+      text-decoration: none;
+      transition: all 0.2s ease;
     }
 
-    .data-card-body p {
-      margin-bottom: 14px;
-    }
-
-    .data-card-body p:last-child {
-      margin-bottom: 0;
-    }
-
-    .data-card-body strong {
+    .github-icon-link:hover {
+      border-color: var(--text);
       color: var(--text);
-      font-weight: 600;
+      transform: translateY(-2px);
     }
 
-    /* 宏观区块 */
-    .data-macro-section {
-      margin-bottom: 24px;
-      padding-left: 20px;
-      border-left: 3px solid var(--border);
-    }
-
-    .data-macro-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .data-macro-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
-
-    .data-macro-content {
-      font-size: 14px;
-      color: var(--text-light);
-      line-height: 1.7;
-    }
-
-    .data-macro-list {
-      list-style: none;
-      margin-top: 10px;
-    }
-
-    .data-macro-list li {
-      padding: 5px 0;
-      padding-left: 18px;
-      position: relative;
-      font-size: 13px;
-    }
-
-    .data-macro-list li::before {
-      content: '→';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    /* 免责声明 */
-    .data-disclaimer {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-top: 40px;
-    }
-
-    .data-disclaimer-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-light);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .data-disclaimer-text {
-      font-size: 13px;
-      color: var(--text-light);
-      line-height: 1.6;
-    }
-
-    .data-disclaimer-meta {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      font-size: 12px;
-      color: var(--text-light);
-      display: flex;
-      gap: 20px;
-    }
-
-    /* 响应式 */
-    @media (max-width: 768px) {
-      .data-content-card {
-        padding: 20px;
-      }
-      .data-section-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-      }
-      .data-section-title {
-        font-size: 18px;
-      }
-    }
-      display: flex;
-      align-items: center;
-      gap: 24px;
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 16px 24px;
-      margin-bottom: 32px;
-      flex-wrap: wrap;
-    }
-
-    .data-stat-item {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .data-stat-icon {
-      width: 32px;
-      height: 32px;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      background: var(--accent-light);
-    }
-
-    .data-stat-content {
-      display: flex;
-      flex-direction: column;
-    }
-
-    .data-stat-label {
-      font-size: 10px;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-light);
-    }
-
-    .data-stat-value {
-      font-size: 14px;
-      font-weight: 600;
-      color: var(--text);
-    }
-
-    .data-stat-divider {
-      width: 1px;
-      height: 28px;
-      background: var(--border);
-    }
-
-    /* 区块 */
-    .data-section {
-      margin-bottom: 36px;
-    }
-
-    .data-section-header {
-      display: flex;
-      align-items: center;
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-
-    .data-section-icon {
-      width: 44px;
-      height: 44px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
-      background: var(--accent-light);
-    }
-
-    .data-section-title {
-      font-size: 20px;
-      font-weight: 600;
-      letter-spacing: -0.3px;
-    }
-
-    .data-section-badge {
-      font-size: 11px;
-      padding: 5px 12px;
-      border-radius: 20px;
-      background: var(--accent-light);
-      color: var(--accent);
-      font-weight: 500;
-      margin-left: auto;
-    }
-
-    /* 内容卡片 */
-    .data-content-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 28px 32px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .data-card-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 18px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .data-card-tag {
-      font-size: 11px;
-      padding: 4px 10px;
-      border-radius: 20px;
-      background: var(--accent-light);
-      color: var(--accent);
-      font-weight: 500;
-      font-family: monospace;
-    }
-
-    .data-card-body {
-      font-size: 14px;
-      color: var(--text-light);
-      line-height: 1.8;
-    }
-
-    .data-card-body p {
-      margin-bottom: 14px;
-    }
-
-    .data-card-body p:last-child {
-      margin-bottom: 0;
-    }
-
-    .data-card-body strong {
-      color: var(--text);
-      font-weight: 600;
-    }
-
-    /* 宏观区块 */
-    .data-macro-section {
-      margin-bottom: 24px;
-      padding-left: 20px;
-      border-left: 3px solid var(--border);
-    }
-
-    .data-macro-section:last-child {
-      margin-bottom: 0;
-    }
-
-    .data-macro-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
-      color: var(--text);
-    }
-
-    .data-macro-content {
-      font-size: 14px;
-      color: var(--text-light);
-      line-height: 1.7;
-    }
-
-    .data-macro-list {
-      list-style: none;
-      margin-top: 10px;
-    }
-
-    .data-macro-list li {
-      padding: 5px 0;
-      padding-left: 18px;
-      position: relative;
-      font-size: 13px;
-    }
-
-    .data-macro-list li::before {
-      content: '→';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-      font-weight: bold;
-    }
-
-    /* 风险区块 */
-    .data-risk-card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 24px 28px;
-    }
-
-    .data-risk-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 14px;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-    }
-
-    .data-risk-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-    }
-
-    .data-risk-number {
-      width: 26px;
-      height: 26px;
-      background: var(--accent-light);
-      color: var(--accent);
-      border-radius: 6px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      flex-shrink: 0;
-    }
-
-    .data-risk-text {
-      font-size: 13px;
-      color: var(--text-light);
-      line-height: 1.6;
-    }
-
-    .data-risk-text strong {
-      color: var(--text);
-    }
-
-    /* 列表 */
-    .data-list {
-      list-style: none;
-      margin: 14px 0;
-    }
-
-    .data-list li {
-      position: relative;
-      padding-left: 18px;
-      margin-bottom: 8px;
-      font-size: 14px;
-      color: var(--text-light);
-      line-height: 1.7;
-    }
-
-    .data-list li::before {
-      content: '•';
-      position: absolute;
-      left: 0;
-      color: var(--accent);
-    }
-
-    /* 免责声明 */
-    .data-disclaimer {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px 24px;
-      margin-top: 40px;
-    }
-
-    .data-disclaimer-title {
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text-light);
-      margin-bottom: 8px;
-      font-weight: 600;
-    }
-
-    .data-disclaimer-text {
-      font-size: 13px;
-      color: var(--text-light);
-      line-height: 1.6;
-    }
-
-    .data-disclaimer-meta {
-      margin-top: 12px;
-      padding-top: 12px;
-      border-top: 1px solid var(--border);
-      font-size: 12px;
-      color: var(--text-light);
-      display: flex;
-      gap: 20px;
-    }
-
-    /* 响应式 */
-    @media (max-width: 768px) {
-      .data-header {
-        padding: 20px;
-      }
-      .data-header h1 {
-        font-size: 26px;
-      }
-      .data-stats-bar {
-        gap: 12px;
-        padding: 12px 16px;
-      }
-      .data-stat-divider {
+    /* ===== 打印样式 ===== */
+    @media print {
+      .top-header {
         display: none;
       }
-      .data-content-card {
-        padding: 20px;
       }
-      .data-section-icon {
-        width: 36px;
-        height: 36px;
-        font-size: 16px;
-      }
-      .data-section-title {
-        font-size: 18px;
-      }
-    }
-
-    /* 响应式 - 移动端 */
-    @media (max-width: 768px) {
-      .app { flex-direction: column; }
-      .sidebar {
-        width: 100%;
-        min-width: 100%;
-        height: auto;
-        position: relative;
-        border-right: none;
-        border-bottom: 1px solid var(--border);
-        padding: 20px 16px;
-      }
-      .sidebar-header { margin-bottom: 24px; }
-      .sidebar-date-nav { margin-bottom: 24px; }
-      .sidebar-types { margin-bottom: 24px; }
-      .sidebar-lock { margin-top: 0; }
-      .quick-dates { flex-direction: row; flex-wrap: wrap; }
-      .quick-date-btn { flex: 1; min-width: 60px; text-align: center; padding: 8px; font-size: 12px; }
-      .main-content { padding: 24px 16px 60px; }
-      .report-header { padding: 40px 0 32px; }
-      .report-header h1 { font-size: 28px; }
-      .stats { flex-direction: column; gap: 28px; }
-      .signal-card { padding: 24px; }
-      .signal-header { flex-direction: column; gap: 8px; }
     }
   </style>
 </head>
@@ -1095,8 +1183,9 @@
   <!-- 密码页 -->
   <div class="password-page" id="passwordPage">
     <div class="password-box">
-      <h1>报告中心</h1>
-      <input type="password" id="passwordInput" placeholder="输入密码" autocomplete="off">
+      <h1>AI财经简报</h1>
+      <p>输入密码访问</p>
+      <input type="password" id="passwordInput" placeholder="••••••" autocomplete="off">
       <button id="passwordBtn">进入</button>
       <div class="password-error" id="passwordError">密码错误</div>
     </div>
@@ -1104,40 +1193,86 @@
 
   <!-- 主应用 -->
   <div class="app" id="app">
-    <!-- 左侧边栏 -->
-    <aside class="sidebar">
-      <div class="sidebar-header">
-        <h1>报告中心</h1>
-        <p class="sidebar-subtitle">ContestTrade</p>
-      </div>
+    <!-- 顶部导航 -->
+    <header class="top-header">
+      <div class="header-inner">
+        <div class="header-brand">
+          <h1>AI财经简报</h1>
+          <span class="header-subtitle">AI ContestTrade</span>
+        </div>
 
-      <div class="sidebar-date-nav">
-        <label>选择日期</label>
-        <input type="date" id="datePicker">
-        <div class="quick-dates" id="quickDates"></div>
+        <div class="header-nav">
+          <div class="header-actions">
+            <button class="lock-btn" id="lockBtn">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              锁定
+            </button>
+          </div>
+        </div>
       </div>
+    </header>
 
-      <div class="sidebar-types">
-        <label>报告类型</label>
-        <div id="reportTypes"></div>
-      </div>
-
-      <div class="sidebar-lock">
-        <button class="lock-btn" id="lockBtn">🔒 重新锁定</button>
-      </div>
-    </aside>
-
-    <!-- 右侧主内容 -->
+    <!-- 主内容 -->
     <main class="main-content">
       <div id="reportContainer">
+        <!-- 日期选择器和 Tab -->
+        <div class="content-toolbar">
+          <button class="date-trigger" id="dateTrigger">
+            <span id="dateTriggerText"></span>
+            <span class="date-trigger-arrow">▾</span>
+          </button>
+          <div class="calendar" id="calendar">
+            <div class="calendar-header">
+              <span class="calendar-title" id="calendarTitle"></span>
+              <div class="calendar-nav">
+                <button id="calendarPrev">‹</button>
+                <button id="calendarNext">›</button>
+              </div>
+            </div>
+            <div class="calendar-weekdays" id="calendarWeekdays"></div>
+            <div class="calendar-days" id="calendarDays"></div>
+            <div class="calendar-legend">
+              <div class="calendar-legend-item">
+                <span class="calendar-legend-dot has-report"></span>
+                <span>有报告</span>
+              </div>
+              <div class="calendar-legend-item">
+                <span class="calendar-legend-dot today"></span>
+                <span>今天</span>
+              </div>
+            </div>
+          </div>
+          <div class="report-tabs" id="reportTypes"></div>
+        </div>
+
         <div class="loading" id="loadingState">
           <div class="spinner"></div>
         </div>
         <div class="empty-state" id="emptyState" style="display:none">
+          <div class="empty-state-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+            <line x1="16" y1="2" x2="16" y2="6"/>
+            <line x1="8" y1="2" x2="8" y2="6"/>
+            <line x1="3" y1="10" x2="21" y2="10"/>
+          </svg>
+        </div>
           <h3>暂无报告</h3>
           <p id="emptyMessage">该日期暂无报告</p>
         </div>
         <div id="reportContent"></div>
+      </div>
+
+      <!-- 底部 GitHub 链接 -->
+      <div class="footer-github">
+        <a href="https://github.com/tomcat2027" target="_blank" rel="noopener noreferrer" class="github-icon-link" title="View on GitHub">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+            <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
+          </svg>
+        </a>
       </div>
     </main>
   </div>
@@ -1148,7 +1283,7 @@
       sessionKey: "reportHub_session",
       sessionDuration: 86400000,
       reportDirs: ["data_reports", "research_reports"],
-      reportLabels: { data_reports: "数据分析", research_reports: "研究策略" }
+      reportLabels: { data_reports: "宏观资讯", research_reports: "投资信号" }
     };
 
     let allReports = [];
@@ -1214,26 +1349,137 @@
       return availableDates.includes(date);
     }
 
-    // 渲染快捷日期按钮
-    function renderQuickDates() {
-      const container = document.getElementById("quickDates");
-      const datesToShow = availableDates.slice(0, 7);
+    // 日历相关变量
+    let calendarYear = new Date().getFullYear();
+    let calendarMonth = new Date().getMonth();
 
-      container.innerHTML = datesToShow.map(date => {
-        const today = formatDate(new Date());
-        const isToday = date === today;
-        const label = isToday ? '今天' : formatDisplayDate(date).replace('年', '/').replace('月', '/').replace('日', '');
-        return `<button class="quick-date-btn ${date === currentDate ? 'active' : ''}" data-date="${date}">${label}</button>`;
-      }).join("");
+    // 渲染日历
+    function renderCalendar() {
+      const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+      const months = ['一月', '二月', '三月', '四月', '五月', '六月', '七月', '八月', '九月', '十月', '十一月', '十二月'];
 
-      container.querySelectorAll(".quick-date-btn").forEach(btn => {
-        btn.addEventListener("click", () => {
-          currentDate = btn.dataset.date;
-          document.getElementById("datePicker").value = currentDate;
-          renderQuickDates();
-          initForDate();
+      // 渲染星期标题
+      const weekdaysContainer = document.getElementById("calendarWeekdays");
+      weekdaysContainer.innerHTML = weekdays.map(d => `<div class="calendar-weekday">${d}</div>`).join('');
+
+      // 渲染月份标题
+      document.getElementById("calendarTitle").textContent = `${calendarYear}年 ${months[calendarMonth]}`;
+
+      // 获取月份第一天和最后一天
+      const firstDay = new Date(calendarYear, calendarMonth, 1);
+      const lastDay = new Date(calendarYear, calendarMonth + 1, 0);
+      const startDay = firstDay.getDay();
+      const daysInMonth = lastDay.getDate();
+
+      // 获取今天
+      const today = new Date();
+      const todayStr = formatDate(today);
+
+      // 生成日期网格
+      let daysHtml = '';
+
+      // 上月的日期
+      const prevMonth = new Date(calendarYear, calendarMonth, 0);
+      const prevDays = prevMonth.getDate();
+      for (let i = startDay - 1; i >= 0; i--) {
+        daysHtml += `<div class="calendar-day other-month">${prevDays - i}</div>`;
+      }
+
+      // 本月日期
+      for (let day = 1; day <= daysInMonth; day++) {
+        const dateStr = `${calendarYear}-${String(calendarMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+        const isToday = dateStr === todayStr;
+        const hasReport = availableDates.includes(dateStr);
+        const isSelected = dateStr === currentDate;
+
+        let classes = 'calendar-day';
+        if (isToday) classes += ' today';
+        if (hasReport) classes += ' has-report';
+        if (isSelected) classes += ' selected';
+
+        daysHtml += `<div class="${classes}" data-date="${dateStr}">${day}</div>`;
+      }
+
+      // 下月日期
+      const totalCells = startDay + daysInMonth;
+      const remainingCells = totalCells <= 35 ? 35 - totalCells : 42 - totalCells;
+      for (let i = 1; i <= remainingCells; i++) {
+        daysHtml += `<div class="calendar-day other-month">${i}</div>`;
+      }
+
+      document.getElementById("calendarDays").innerHTML = daysHtml;
+
+      // 绑定日期点击事件
+      document.querySelectorAll('.calendar-day:not(.other-month)').forEach(day => {
+        day.addEventListener("click", () => {
+          const dateStr = day.dataset.date;
+          if (dateStr) {
+            currentDate = dateStr;
+            renderCalendar();
+            initForDate();
+            updateDateTriggerText();
+            // 关闭日历
+            document.getElementById("dateTrigger").classList.remove("open");
+            document.getElementById("calendar").classList.remove("open");
+          }
         });
       });
+    }
+
+    // 上一个月
+    function prevMonth() {
+      calendarMonth--;
+      if (calendarMonth < 0) {
+        calendarMonth = 11;
+        calendarYear--;
+      }
+      renderCalendar();
+    }
+
+    // 下一个月
+    function nextMonth() {
+      calendarMonth++;
+      if (calendarMonth > 11) {
+        calendarMonth = 0;
+        calendarYear++;
+      }
+      renderCalendar();
+    }
+
+    // 初始化日历事件
+    function initCalendarEvents() {
+      document.getElementById("calendarPrev").addEventListener("click", prevMonth);
+      document.getElementById("calendarNext").addEventListener("click", nextMonth);
+
+      // 日期触发器点击
+      const dateTrigger = document.getElementById("dateTrigger");
+      const calendar = document.getElementById("calendar");
+
+      dateTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        dateTrigger.classList.toggle("open");
+        calendar.classList.toggle("open");
+      });
+
+      // 点击外部关闭日历
+      document.addEventListener("click", (e) => {
+        if (!dateTrigger.contains(e.target) && !calendar.contains(e.target)) {
+          dateTrigger.classList.remove("open");
+          calendar.classList.remove("open");
+        }
+      });
+    }
+
+    // 更新日期触发器显示
+    function updateDateTriggerText() {
+      const dateTriggerText = document.getElementById("dateTriggerText");
+      if (currentDate) {
+        const [y, m, d] = currentDate.split("-");
+        dateTriggerText.textContent = `${y}年${parseInt(m)}月${parseInt(d)}日`;
+      } else {
+        const today = new Date();
+        dateTriggerText.textContent = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+      }
     }
 
     // 渲染类型按钮
@@ -1279,35 +1525,12 @@
       if (sourcesMatch) stats.sources = sourcesMatch[1];
       if (rateMatch) stats.rate = rateMatch[1];
 
-      // 统计区
-      html += `
-        <section class="stats-grid animate delay-1">
-          <div class="stat-card">
-            <div class="stat-value">${stats.sources}</div>
-            <div class="stat-label">数据源</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${stats.signals}</div>
-            <div class="stat-label">投资信号</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${stats.rate}</div>
-            <div class="stat-label">有效率</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${stats.signals}</div>
-            <div class="stat-label">买入信号</div>
-          </div>
-        </section>
-      `;
-
       // 查找信号区块
       const signalBlocks = [];
       let currentBlock = null;
       let currentSection = '';
 
       lines.forEach((line, i) => {
-        // 匹配股票信号标题
         const signalMatch = line.match(/^####\s*(\d+)\.\s*(.+?)\s*\(([^)]+)\)/);
         if (signalMatch) {
           if (currentBlock) signalBlocks.push(currentBlock);
@@ -1324,35 +1547,28 @@
         }
 
         if (currentBlock) {
-          // 投资动作
           if (line.includes('**投资动作**')) {
             currentBlock.action = line.replace(/.*\*\*投资动作\*\*:\s*\*\*(.+?)\*\*/, '$1').toUpperCase();
           }
-          // 分析来源
           if (line.includes('**分析来源**')) {
             currentBlock.source = line.replace(/.*\*\*分析来源\*\*:\s*(.+)/, '$1').trim();
           }
-          // 支撑证据
           if (line.includes('**支撑证据**')) {
             currentSection = 'evidence';
             return;
           }
-          // 风险提示
           if (line.includes('**风险提示**')) {
             currentSection = 'risk';
             return;
           }
-          // 证据项
           if (currentSection === 'evidence' && line.match(/^\s*\d+\.\s+\*\*(.+?)\*\*/)) {
             const match = line.match(/^\s*\d+\.\s+\*\*(.+?)\*\*/);
             if (match) {
-              // 提取证据内容，移除来源信息
               let evidence = match[1];
               evidence = evidence.replace(/\(来源:.*?\)/g, '').replace(/时间:.*$/, '').trim();
               currentBlock.evidence.push(evidence);
             }
           }
-          // 风险项
           if (currentSection === 'risk' && line.match(/^\s*-\s+(.+)/)) {
             const risk = line.replace(/^\s*-\s+/, '').replace(/\*\*/g, '').trim();
             currentBlock.risks.push(risk);
@@ -1361,19 +1577,13 @@
       });
       if (currentBlock) signalBlocks.push(currentBlock);
 
-      // 渲染信号区块
+      // 渲染信号区块（不显示标题，tab已标识）
       if (signalBlocks.length > 0) {
-        html += `
-          <div class="section-header animate delay-2">
-            <h2>推荐投资信号</h2>
-            <div class="section-line"></div>
-          </div>
-        `;
+        html += ``;
 
         signalBlocks.forEach((block, idx) => {
-          const delayClass = `delay-${Math.min(idx + 2, 4)}`;
           html += `
-            <article class="signal-card animate ${delayClass}">
+            <article class="signal-card">
               <div class="signal-header">
                 <span class="signal-badge">${block.action || 'BUY'}</span>
                 <span class="signal-sector">${block.source || 'Research Agent'}</span>
@@ -1394,13 +1604,13 @@
       }
 
       // 免责声明
-      const disclaimerMatch = text.match(/## ⚠️ 免责声明\n([\s\S]+?)\n\*\*报告生成时间\*\*:(.+?)\n\*\*(.+?)\*\*/);
+      const disclaimerMatch = text.match(/## ⚠️.*?\n\n([\s\S]+?)\n\n\*\*报告生成时间\*\*:\s*(.+?)\n\*\*([^\n]+)\*\*/);
       if (disclaimerMatch) {
         html += `
-          <div class="disclaimer animate delay-4">
+          <div class="disclaimer">
             <h4>免责声明</h4>
             <p>${disclaimerMatch[1].trim()}</p>
-            <p style="margin-top: 8px; opacity: 0.7;">报告生成时间: ${disclaimerMatch[2].trim()} · ${disclaimerMatch[3].trim()}</p>
+            <p style="margin-top: var(--space-sm); opacity: 0.7;">报告生成时间: ${disclaimerMatch[2].trim()} · ${disclaimerMatch[3].trim()}</p>
           </div>
         `;
       }
@@ -1419,34 +1629,14 @@
       const zhangtingMatch = text.match(/涨停股[达]?(\d+)/);
       const jigouMatch = text.match(/机构[参与|净买入]?(\d+\.?\d*)[亿]?[元]?/);
       const longhuMatch = text.match(/龙虎榜.*?(\d+)/);
-      const qingxuMatch = text.match(/情绪[为]?([\u4e00-\u9fa5]+)/);
+      const qingxuMatch = text.match(/情绪[为]?(回暖|降温|低迷|旺盛|稳定|疲软|谨慎|乐观|回暖中)/);
+      const agentCountMatch = text.match(/\*\*数据代理数量\*\*:\s*(\d+)/);
 
       const zhangting = zhangtingMatch ? zhangtingMatch[1] : '—';
       const jigou = jigouMatch ? jigouMatch[1] + '亿' : '—';
       const longhu = longhuMatch ? longhuMatch[1] : '—';
       const qingxu = qingxuMatch ? qingxuMatch[1] : '稳定';
-
-      // 统计网格 - 与研究策略一致的样式
-      html += `
-        <section class="stats-grid animate delay-1">
-          <div class="stat-card">
-            <div class="stat-value">${zhangting}</div>
-            <div class="stat-label">涨停股</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${jigou}</div>
-            <div class="stat-label">机构净买入</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${longhu}</div>
-            <div class="stat-label">龙虎榜 (10日)</div>
-          </div>
-          <div class="stat-card">
-            <div class="stat-value">${qingxu}</div>
-            <div class="stat-label">市场情绪</div>
-          </div>
-        </section>
-      `;
+      const agentCount = agentCountMatch ? agentCountMatch[1] : '—';
 
       // 移除引用标记
       let cleanText = text.replace(/(\[\d+\])+/g, '');
@@ -1457,12 +1647,10 @@
       let contentLines = [];
 
       lines.forEach((line, i) => {
-        // 跳过头部
         if (line.startsWith('# ') || line.startsWith('**分析时间') || line.startsWith('**分析状态') || line.startsWith('**数据代理数量')) {
           return;
         }
 
-        // 三级标题 = Agent Section
         const agentMatch = line.match(/^### 📈\s*(.+)/);
         if (agentMatch) {
           if (currentSection) {
@@ -1477,12 +1665,10 @@
           return;
         }
 
-        // hr 分隔线
         if (line.match(/^---$/)) {
           return;
         }
 
-        // 免责声明
         if (line.includes('## ⚠️ 免责声明')) {
           if (currentSection) {
             currentSection.content = contentLines.join('\n');
@@ -1502,17 +1688,20 @@
         sections.push(currentSection);
       }
 
-      // 渲染各个区块
-      const icons = ['📊', '🔥', '📈', '🌐'];
+      // 渲染各个区块（不显示标题，tab已标识）
+      if (sections.length > 0) {
+        html += ``;
+      }
+
+      const icons = ['', '', '', ''];
       sections.forEach((section, idx) => {
-        const delayClass = `delay-${Math.min(idx + 1, 4)}`;
         const icon = icons[idx % icons.length];
         html += `
-          <section class="data-section animate ${delayClass}">
+          <section class="data-section">
             <div class="data-section-header">
               <div class="data-section-icon">${icon}</div>
               <h2 class="data-section-title">${section.title}</h2>
-              <span class="data-section-badge">数据代理</span>
+              <span class="data-section-badge">AI Agent</span>
             </div>
             <div class="data-content-card">
               ${parseDataContent(section.content)}
@@ -1521,92 +1710,107 @@
         `;
       });
 
-      // 免责声明
-      const disclaimerMatch = text.match(/## ⚠️ 免责声明\n([\s\S]+?)\n\*\*报告生成时间\*\*:(.+?)\n\*\*(.+?)\*\*/);
-      if (disclaimerMatch) {
-        html += `
-          <div class="data-disclaimer animate delay-4">
+      // 免责声明 - 使用默认文本
+      const reportTimeMatch = text.match(/\*\*报告生成时间\*\*:\s*(.+)/);
+      const reportTime = reportTimeMatch ? reportTimeMatch[1].trim() : '';
+      html += `
+          <div class="data-disclaimer">
             <div class="data-disclaimer-title">免责声明</div>
-            <div class="data-disclaimer-text">${disclaimerMatch[1].trim()}</div>
+            <div class="data-disclaimer-text">本报告由ContestTrade数据分析系统生成，数据来源于各个AI Agent的分析结果，仅供参考。</div>
             <div class="data-disclaimer-meta">
-              <span>报告生成时间: ${disclaimerMatch[2].trim()}</span>
-              <span>系统版本: ${disclaimerMatch[3].trim()}</span>
+              <span>报告生成时间: ${reportTime}</span>
+              <span>系统版本: v2.0</span>
             </div>
           </div>
         `;
-      }
 
       html += '</div>';
       return html;
     }
 
-    // 解析数据报告内容
+    // 解析数据报告内容 - 统一间距版本
     function parseDataContent(content) {
       if (!content.trim()) return '';
 
-      let html = '<div class="data-card-body">';
-
+      const blocks = [];
       const lines = content.split('\n');
       let macroTitle = '';
-      let pendingHtml = [];
+      let pendingLines = [];
       let listItems = [];
 
-      const flushMacro = () => {
-        if (pendingHtml.length > 0 || listItems.length > 0) {
-          const contentHtml = pendingHtml.join('') + (listItems.length > 0 ? `<ul class="data-macro-list">${listItems.map(item => `<li>${item}</li>`).join('')}</ul>` : '');
-          if (macroTitle) {
-            html += `<div class="data-macro-section">
-              <div class="data-macro-title">${macroTitle}</div>
-              <div class="data-macro-content">${contentHtml}</div>
-            </div>`;
-            macroTitle = '';
-          } else {
-            html += contentHtml;
-          }
-          pendingHtml = [];
-          listItems = [];
+      const flushBlock = () => {
+        if (pendingLines.length === 0 && listItems.length === 0) return;
+
+        let blockContent = '';
+
+        // 处理段落
+        if (pendingLines.length > 0) {
+          blockContent += pendingLines.map(line => {
+            line = line.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
+            line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            return `<p>${line}</p>`;
+          }).join('');
         }
+
+        // 处理列表
+        if (listItems.length > 0) {
+          blockContent += `<ul class="data-macro-list">${listItems.map(item => {
+            item = item.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
+            item = item.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+            return `<li>${item}</li>`;
+          }).join('')}</ul>`;
+        }
+
+        if (macroTitle) {
+          blocks.push(`<div class="data-macro-section">
+            <div class="data-macro-title">${macroTitle}</div>
+            <div class="data-macro-content">${blockContent}</div>
+          </div>`);
+          macroTitle = '';
+        } else {
+          blocks.push(blockContent);
+        }
+
+        pendingLines = [];
+        listItems = [];
       };
 
       lines.forEach(line => {
         line = line.trim();
         if (!line) {
-          flushMacro();
+          flushBlock();
           return;
         }
 
-        // 二级标题 = 宏观区块标题
+        // 二级标题
         if (line.match(/^##\s/) && !line.includes('⚠️')) {
-          flushMacro();
+          flushBlock();
           macroTitle = line.replace(/^##\s*/, '').replace(/\*\*/g, '');
           return;
         }
 
         // 分隔线
         if (line === '---') {
-          flushMacro();
+          flushBlock();
           return;
         }
 
         // 列表项
         if (line.match(/^[\*\-\+]\s+(.+)/) || line.match(/^\d+\.\s+(.+)/)) {
           let item = line.replace(/^[\*\-\+]\s+/, '').replace(/^\d+\.\s+/, '');
-          item = item.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
-          item = item.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
           listItems.push(item);
           return;
         }
 
-        // 段落
-        flushMacro();
-        line = line.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
-        line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-        pendingHtml.push(`<p>${line}</p>`);
+        // 普通段落
+        flushBlock();
+        pendingLines.push(line);
       });
 
-      flushMacro();
-      html += '</div>';
-      return html;
+      flushBlock();
+
+      // 所有块用统一容器包裹，确保间距一致
+      return `<div class="data-card-body">${blocks.join('<div class="content-divider"></div>')}</div>`;
     }
 
     // 加载报告
@@ -1651,6 +1855,7 @@
         await loadReport();
       } else {
         document.getElementById("loadingState").style.display = "none";
+        document.getElementById("reportContent").innerHTML = '';
         document.getElementById("emptyState").style.display = "block";
         document.getElementById("emptyMessage").textContent = "该日期暂无报告";
       }
@@ -1664,14 +1869,17 @@
       const today = formatDate(new Date());
       currentDate = hasDate(today) ? today : availableDates[0];
 
-      // 设置日期选择器
-      const datePicker = document.getElementById("datePicker");
-      datePicker.value = currentDate;
-      datePicker.max = availableDates[0] || today; // 限制最大日期为最新
+      // 设置日历到当前选择日期的月份
+      if (currentDate) {
+        const [y, m] = currentDate.split('-');
+        calendarYear = parseInt(y);
+        calendarMonth = parseInt(m) - 1;
+      }
 
-      // 渲染快捷日期
-      renderQuickDates();
+      renderCalendar();
+      initCalendarEvents();
       await initForDate();
+      updateDateTriggerText();
     }
 
     // 事件
@@ -1685,13 +1893,16 @@
         if (!pwd) return;
         if (await validatePassword(pwd)) {
           localStorage.setItem(CONFIG.sessionKey, JSON.stringify({ timestamp: Date.now() }));
-          document.getElementById("passwordPage").classList.add("hidden");
+          document.getElementById("passwordPage").style.display = "none";
           document.getElementById("app").classList.add("visible");
           initApp();
         } else {
           pwdInput.classList.add("shake");
           pwdError.classList.add("show");
-          setTimeout(() => { pwdInput.classList.remove("shake"); }, 300);
+          setTimeout(() => {
+            pwdInput.classList.remove("shake");
+            pwdError.classList.remove("show");
+          }, 400);
         }
       });
 
@@ -1700,20 +1911,13 @@
       document.getElementById("lockBtn").addEventListener("click", () => {
         localStorage.removeItem(CONFIG.sessionKey);
         document.getElementById("app").classList.remove("visible");
-        document.getElementById("passwordPage").classList.remove("hidden");
+        document.getElementById("passwordPage").style.display = "flex";
         pwdInput.value = "";
         pwdError.classList.remove("show");
       });
 
-      // 日期选择器变化
-      document.getElementById("datePicker").addEventListener("change", (e) => {
-        currentDate = e.target.value;
-        renderQuickDates();
-        initForDate();
-      });
-
       if (checkSession()) {
-        document.getElementById("passwordPage").classList.add("hidden");
+        document.getElementById("passwordPage").style.display = "none";
         document.getElementById("app").classList.add("visible");
         initApp();
       }
