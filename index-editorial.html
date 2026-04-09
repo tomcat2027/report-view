@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContestTrade 投资周刊</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #f8f5f0;
+      --ink: #1a1a1a;
+      --ink-light: #4a4a4a;
+      --accent: #8b0000;
+      --gold: #b8860b;
+      --sage: #5c6b5a;
+      --border: #e0dcd7;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Serif SC', serif;
+      background: var(--cream);
+      color: var(--ink);
+      line-height: 1.8;
+    }
+
+    /* Top Bar */
+    .top-bar {
+      border-bottom: 1px solid var(--ink);
+      padding: 12px 0;
+      text-align: center;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 40px;
+    }
+
+    /* Masthead */
+    .masthead {
+      text-align: center;
+      padding: 60px 0 40px;
+      border-bottom: 2px solid var(--ink);
+    }
+
+    .masthead-date {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--ink-light);
+      margin-bottom: 24px;
+    }
+
+    .masthead h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 72px;
+      font-weight: 400;
+      letter-spacing: -2px;
+      margin-bottom: 8px;
+    }
+
+    .masthead-subtitle {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-style: italic;
+      color: var(--ink-light);
+    }
+
+    .masthead-tagline {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-top: 24px;
+    }
+
+    /* Stats Strip */
+    .stats-strip {
+      display: flex;
+      justify-content: center;
+      gap: 48px;
+      padding: 32px 0;
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 48px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 42px;
+      font-weight: 600;
+      color: var(--accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-top: 8px;
+    }
+
+    /* Main Grid */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1fr 320px;
+      gap: 60px;
+      margin-bottom: 64px;
+    }
+
+    /* Section Headers */
+    .section-header {
+      margin-bottom: 32px;
+    }
+
+    .section-header h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    /* Featured Signal */
+    .featured-signal {
+      margin-bottom: 48px;
+      padding-bottom: 48px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .featured-label {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 16px;
+    }
+
+    .featured-signal h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 32px;
+      font-weight: 400;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .featured-sector {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 12px;
+      color: var(--sage);
+      margin-bottom: 24px;
+    }
+
+    .featured-evidence {
+      background: #faf8f5;
+      padding: 24px;
+      border-left: 3px solid var(--accent);
+      margin-bottom: 24px;
+    }
+
+    .featured-evidence p {
+      font-size: 15px;
+      color: var(--ink-light);
+      line-height: 1.7;
+    }
+
+    .featured-evidence strong {
+      color: var(--ink);
+    }
+
+    /* Signal List */
+    .signal-list {
+      list-style: none;
+    }
+
+    .signal-item {
+      padding: 24px 0;
+      border-bottom: 1px solid var(--border);
+      display: grid;
+      grid-template-columns: 60px 1fr;
+      gap: 20px;
+    }
+
+    .signal-item:last-child {
+      border-bottom: none;
+    }
+
+    .signal-action {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--accent);
+      letter-spacing: 1px;
+    }
+
+    .signal-content h4 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .signal-content .code {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      color: var(--ink-light);
+    }
+
+    .signal-content .evidence {
+      font-size: 13px;
+      color: var(--ink-light);
+      margin-top: 8px;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      border-left: 1px solid var(--border);
+      padding-left: 40px;
+    }
+
+    .sidebar-section {
+      margin-bottom: 40px;
+    }
+
+    .sidebar-section h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 18px;
+      font-weight: 600;
+      margin-bottom: 16px;
+    }
+
+    .sector-tag {
+      display: inline-block;
+      background: var(--ink);
+      color: var(--cream);
+      padding: 6px 12px;
+      margin: 4px 4px 4px 0;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 1px;
+    }
+
+    .key-metrics {
+      list-style: none;
+    }
+
+    .key-metrics li {
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+
+    .key-metrics li:last-child {
+      border-bottom: none;
+    }
+
+    .key-metrics .value {
+      font-weight: 500;
+      color: var(--accent);
+    }
+
+    /* Risk Section */
+    .risk-section {
+      background: #f5f3f0;
+      padding: 20px;
+      margin-top: 32px;
+    }
+
+    .risk-section h4 {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 12px;
+    }
+
+    .risk-section ul {
+      list-style: none;
+    }
+
+    .risk-section li {
+      font-size: 12px;
+      color: var(--ink-light);
+      padding: 6px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .risk-section li:last-child {
+      border-bottom: none;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      background: var(--ink);
+      color: var(--cream);
+      padding: 32px;
+      margin-top: 64px;
+      text-align: center;
+    }
+
+    .disclaimer p {
+      font-family: 'DM Sans', sans-serif;
+      font-size: 11px;
+      letter-spacing: 1px;
+      opacity: 0.7;
+    }
+
+    .disclaimer p:first-child {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 14px;
+      font-style: italic;
+      opacity: 1;
+      margin-bottom: 12px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      font-family: 'DM Sans', sans-serif;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--ink-light);
+    }
+
+    @media (max-width: 900px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sidebar {
+        border-left: none;
+        padding-left: 0;
+        border-top: 1px solid var(--border);
+        padding-top: 40px;
+      }
+
+      .masthead h1 {
+        font-size: 48px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="top-bar">
+    <div class="container">
+      AI驱动的智能投研系统 · 每日市场分析
+    </div>
+  </div>
+
+  <div class="container">
+    <header class="masthead">
+      <p class="masthead-date">2026年4月9日 星期四</p>
+      <h1>投资分析报告</h1>
+      <p class="masthead-subtitle">Weekly Investment Intelligence</p>
+      <p class="masthead-tagline">ContestTrade v1.0.0</p>
+    </header>
+
+    <section class="stats-strip">
+      <div class="stat">
+        <div class="stat-value">4</div>
+        <div class="stat-label">数据源</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">10</div>
+        <div class="stat-label">投资信号</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">100%</div>
+        <div class="stat-label">有效率</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">10</div>
+        <div class="stat-label">买入信号</div>
+      </div>
+    </section>
+
+    <div class="main-grid">
+      <main>
+        <div class="section-header">
+          <h2>精选推荐</h2>
+        </div>
+
+        <article class="featured-signal">
+          <p class="featured-label">Primary Recommendation</p>
+          <h3>光模块及AI算力相关中小市值股票组合</h3>
+          <p class="featured-sector">光模块/AI算力板块</p>
+          <div class="featured-evidence">
+            <p>美伊停火协议达成显著改善全球风险偏好，科技成长股成为领涨主线。<strong>中际旭创、新易盛</strong>等CPO概念股创历史新高，融资买入额分别达<strong>28.41亿元</strong>和<strong>32.65亿元</strong>，显示资金高度认可。创业板人工智能ETF领涨<strong>10.45%</strong>，资金从地缘敏感板块转向科技成长领域趋势明确。</p>
+          </div>
+          <p style="font-size: 13px; color: var(--ink-light);">来源: Research Agent 0</p>
+        </article>
+
+        <div class="section-header">
+          <h2>全部投资信号</h2>
+        </div>
+
+        <ul class="signal-list">
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>锂电材料业绩预增中小市值股票组合</h4>
+              <span class="code">锂电新能源板块</span>
+              <p class="evidence">天华新能一季度净利润预计达9亿元，同比增超275倍，暂列A股"预增王"</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>半导体复苏相关中小市值股票组合</h4>
+              <span class="code">半导体板块</span>
+              <p class="evidence">半导体指数4月8日大涨，兆易创新获融资买入28.68亿元</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>保险及银行大盘蓝筹股组合</h4>
+              <span class="code">金融板块</span>
+              <p class="evidence">五大险企2025年合计投资收益大增，新华保险总投资收益率达6.6%</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>港股科技股超跌反弹组合</h4>
+              <span class="code">港股科技板块</span>
+              <p class="evidence">4月8日恒科指大涨5.22%，美团-W一度涨超8%</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>贵州茅台</h4>
+              <span class="code">600519.SH</span>
+              <p class="evidence">北向资金回流A股预期增强，外资首选标的</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>天华新能</h4>
+              <span class="code">300390.SZ</span>
+              <p class="evidence">一季度净利润同比增超275倍，暂列A股"预增王"</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>中际旭创</h4>
+              <span class="code">300308.SZ</span>
+              <p class="evidence">传港交所秘密递表，募资至少30亿美元</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>中国石油</h4>
+              <span class="code">601857.SH</span>
+              <p class="evidence">WTI原油跌破100美元/桶，短期超跌反弹概率上升</p>
+            </div>
+          </li>
+          <li class="signal-item">
+            <span class="signal-action">BUY</span>
+            <div class="signal-content">
+              <h4>五粮液</h4>
+              <span class="code">000858.SZ</span>
+              <p class="evidence">消费板块重新获得资金关注，白酒板块更易获得溢价</p>
+            </div>
+          </li>
+        </ul>
+      </main>
+
+      <aside class="sidebar">
+        <div class="sidebar-section">
+          <h3>板块分布</h3>
+          <span class="sector-tag">AI算力</span>
+          <span class="sector-tag">光通信</span>
+          <span class="sector-tag">锂电新能源</span>
+          <span class="sector-tag">半导体</span>
+          <span class="sector-tag">金融</span>
+          <span class="sector-tag">港股科技</span>
+          <span class="sector-tag">消费</span>
+          <span class="sector-tag">能源</span>
+        </div>
+
+        <div class="sidebar-section">
+          <h3>关键数据</h3>
+          <ul class="key-metrics">
+            <li>
+              <span>A股成交额</span>
+              <span class="value">2.43万亿</span>
+            </li>
+            <li>
+              <span>融资余额单日增加</span>
+              <span class="value">161.30亿</span>
+            </li>
+            <li>
+              <span>恒科指单日涨幅</span>
+              <span class="value">+5.22%</span>
+            </li>
+            <li>
+              <span>创业板AI ETF涨幅</span>
+              <span class="value">+10.45%</span>
+            </li>
+            <li>
+              <span>人民币汇率</span>
+              <span class="value">6.8649</span>
+            </li>
+            <li>
+              <span>美联储降息概率</span>
+              <span class="value">43%</span>
+            </li>
+          </ul>
+        </div>
+
+        <div class="risk-section">
+          <h4>主要风险提示</h4>
+          <ul>
+            <li>4月10日美伊谈判若破裂将再度引爆市场波动</li>
+            <li>部分光模块个股已创历史新高，短期技术性回调压力</li>
+            <li>融资资金推动的上涨若遇政策收紧可能快速回撤</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <div class="disclaimer">
+      <p>"投资有风险，决策需谨慎"</p>
+      <p>本报告由ContestTrade AI系统生成，仅供参考，不构成投资建议</p>
+      <p>报告生成时间: 2026-04-09 09:26:44 · ContestTrade v1.0.0</p>
+    </div>
+
+    <footer>
+      CONTESTTRADE · 2026
+    </footer>
+  </div>
+</body>
+</html>

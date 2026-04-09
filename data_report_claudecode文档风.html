@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContestTrade 数据分析报告</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --bg-subtle: #f6f8fa;
+      --bg-elevated: #ffffff;
+      --border: #e1e4e8;
+      --border-muted: #eaecef;
+      --text: #1f2328;
+      --text-secondary: #656d76;
+      --text-muted: #8b949e;
+      --accent: #7c3aed;
+      --accent-bg: #f5f3ff;
+      --accent-border: #ddd6fe;
+      --code-bg: #1f2328;
+      --code-text: #e6edf3;
+      --green: #1a7f37;
+      --green-bg: #dafbe1;
+      --red: #cf222e;
+      --red-bg: #ffebe9;
+      --yellow: #9a6700;
+      --yellow-bg: #fff8c5;
+      --blue: #0969da;
+      --blue-bg: #ddf4ff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Geist', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.65;
+      font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 48px 24px 96px;
+    }
+
+    /* Header */
+    .header {
+      padding-bottom: 32px;
+      margin-bottom: 40px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .header-eyebrow {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--accent);
+      margin-bottom: 12px;
+      letter-spacing: -0.01em;
+    }
+
+    .header h1 {
+      font-size: 36px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      margin-bottom: 12px;
+    }
+
+    .header-desc {
+      font-size: 16px;
+      color: var(--text-secondary);
+      max-width: 600px;
+    }
+
+    .header-meta {
+      margin-top: 20px;
+      font-size: 13px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .header-meta .status {
+      color: var(--green);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-weight: 500;
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+      margin-bottom: 48px;
+    }
+
+    .stat-cell {
+      background: var(--bg);
+      padding: 20px 24px;
+    }
+
+    .stat-value {
+      font-size: 24px;
+      font-weight: 600;
+      font-family: 'Geist Mono', monospace;
+      letter-spacing: -0.02em;
+    }
+
+    .stat-value.green { color: var(--green); }
+    .stat-value.yellow { color: var(--yellow); }
+    .stat-value.blue { color: var(--blue); }
+
+    .stat-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Section */
+    .section {
+      margin-bottom: 48px;
+    }
+
+    .section-header {
+      margin-bottom: 20px;
+    }
+
+    .section-label {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--accent);
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-size: 22px;
+      font-weight: 600;
+      letter-spacing: -0.01em;
+    }
+
+    /* Content Card */
+    .card {
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .card-header {
+      padding: 16px 20px;
+      background: var(--bg-subtle);
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .card-meta {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .card-body {
+      padding: 24px;
+    }
+
+    /* Index Table */
+    .index-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    .index-table th {
+      text-align: left;
+      padding: 10px 16px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .index-table td {
+      padding: 12px 16px;
+      border: 1px solid var(--border);
+    }
+
+    .index-table .mono {
+      font-family: 'Geist Mono', monospace;
+      font-weight: 500;
+    }
+
+    .index-table .up {
+      color: var(--green);
+    }
+
+    /* Text Content */
+    .text-content {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.75;
+    }
+
+    .text-content p {
+      margin-bottom: 14px;
+    }
+
+    .text-content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .text-content strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* Callout */
+    .callout {
+      padding: 14px 16px;
+      border-radius: 6px;
+      margin: 16px 0;
+      font-size: 14px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .callout-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .callout-content {
+      flex: 1;
+      line-height: 1.6;
+    }
+
+    .callout.accent {
+      background: var(--accent-bg);
+      border: 1px solid var(--accent-border);
+    }
+
+    .callout.accent .callout-icon {
+      color: var(--accent);
+    }
+
+    .callout.info {
+      background: var(--blue-bg);
+      border: 1px solid #b6e3ff;
+    }
+
+    .callout.info .callout-icon {
+      color: var(--blue);
+    }
+
+    .callout.success {
+      background: var(--green-bg);
+      border: 1px solid #abe5b9;
+    }
+
+    .callout.success .callout-icon {
+      color: var(--green);
+    }
+
+    .callout.warning {
+      background: var(--yellow-bg);
+      border: 1px solid #d4a72c66;
+    }
+
+    .callout.warning .callout-icon {
+      color: var(--yellow);
+    }
+
+    /* Macro Section */
+    .macro-section {
+      margin-bottom: 28px;
+    }
+
+    .macro-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .macro-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .macro-list {
+      list-style: none;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    .macro-list li {
+      padding: 10px 14px;
+      font-size: 13px;
+      color: var(--text-secondary);
+      border-bottom: 1px solid var(--border-muted);
+    }
+
+    .macro-list li:last-child {
+      border-bottom: none;
+    }
+
+    .macro-list li::before {
+      content: '–';
+      margin-right: 10px;
+      color: var(--accent);
+    }
+
+    /* Risk Table */
+    .risk-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    .risk-table th {
+      text-align: left;
+      padding: 12px 14px;
+      background: var(--bg-subtle);
+      border: 1px solid var(--border);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .risk-table td {
+      padding: 14px;
+      border: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .risk-num {
+      width: 28px;
+      height: 28px;
+      background: var(--red-bg);
+      color: var(--red);
+      border-radius: 4px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      font-weight: 600;
+      font-family: 'Geist Mono', monospace;
+    }
+
+    .risk-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .risk-desc {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      margin-top: 64px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border);
+    }
+
+    .disclaimer-title {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    .disclaimer-text {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.7;
+    }
+
+    .disclaimer-meta {
+      margin-top: 12px;
+      font-size: 12px;
+      color: var(--text-muted);
+      font-family: 'Geist Mono', monospace;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate {
+      animation: fadeIn 0.4s ease-out forwards;
+      opacity: 0;
+    }
+
+    .delay-1 { animation-delay: 0.05s; }
+    .delay-2 { animation-delay: 0.1s; }
+    .delay-3 { animation-delay: 0.15s; }
+    .delay-4 { animation-delay: 0.2s; }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .container {
+        padding: 32px 16px 64px;
+      }
+
+      .header h1 {
+        font-size: 28px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .index-table {
+        font-size: 13px;
+      }
+
+      .index-table th,
+      .index-table td {
+        padding: 8px 10px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header class="header animate">
+      <div class="header-eyebrow">Market Intelligence</div>
+      <h1>ContestTrade 数据分析报告</h1>
+      <p class="header-desc">实时市场数据分析与风险监测系统，涵盖热钱市场、宏观策略、价格数据等多维度信息源。</p>
+      <div class="header-meta">
+        <span class="status">
+          <span class="status-dot"></span>
+          分析完成
+        </span>
+        <span>4 个数据代理</span>
+        <span>2026-04-09 02:05:09</span>
+      </div>
+    </header>
+
+    <!-- Stats Grid -->
+    <div class="stats-grid animate delay-1">
+      <div class="stat-cell">
+        <div class="stat-value green">123</div>
+        <div class="stat-label">涨停股</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value yellow">20.34亿</div>
+        <div class="stat-label">机构净买入</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value blue">481</div>
+        <div class="stat-label">龙虎榜 (10日)</div>
+      </div>
+      <div class="stat-cell">
+        <div class="stat-value green">稳定偏强</div>
+        <div class="stat-label">市场情绪</div>
+      </div>
+    </div>
+
+    <!-- Hot Money Agent -->
+    <section class="section animate delay-1">
+      <div class="section-header">
+        <div class="section-label">Hot Money Agent</div>
+        <h2 class="section-title">热钱市场数据</h2>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">20260409: 热钱市场数据汇总</span>
+          <span class="card-meta">02:05:09</span>
+        </div>
+        <div class="card-body">
+          <table class="index-table">
+            <thead>
+              <tr>
+                <th>指数</th>
+                <th>收盘点位</th>
+                <th>涨跌幅</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>上证指数</td>
+                <td class="mono">3995.00</td>
+                <td class="mono up">+2.69%</td>
+              </tr>
+              <tr>
+                <td>创业板指</td>
+                <td class="mono">3347.61</td>
+                <td class="mono up">+5.91%</td>
+              </tr>
+              <tr>
+                <td>科创50</td>
+                <td class="mono">1352.69</td>
+                <td class="mono up">+6.18%</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="text-content">
+            <p><strong>A股热钱市场活跃度整体偏强。</strong> 涨停股达123只，连板结构以首板为主（112只），仅1只4连板，显示资金偏好短期博弈。跌停股4只，集中于能源板块，抛压有限。</p>
+
+            <div class="callout accent">
+              <span class="callout-icon">📊</span>
+              <div class="callout-content">
+                <strong>机构资金动向：</strong> 机构参与274只个股，净买入20.34亿元，重点加仓振华股份（7.68亿）、特发信息（4.63亿）、香农芯创（2.57亿），显示机构资金向新材料、通信、半导体方向集中。
+              </div>
+            </div>
+
+            <p><strong>游资营业部活跃：</strong> 196家参与，深股通专用操作5次、单笔最高8.68亿，国泰海通上海浦东新区营业部操作2次、最高7.39亿，开源证券铜川正阳路营业部单笔4.23亿，表明一线游资积极介入。</p>
+
+            <p>涨停个股分布分散，无明显单一概念主导，但通信、黄金、钢铁、医药等板块均有表现。整体看，热钱交投活跃，机构与游资协同参与，市场情绪稳定。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Thx Summary Agent -->
+    <section class="section animate delay-2">
+      <div class="section-header">
+        <div class="section-label">Thx Summary Agent</div>
+        <h2 class="section-title">宏观市场摘要</h2>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">市场信息综合摘要</span>
+          <span class="card-meta">2026年4月9日</span>
+        </div>
+        <div class="card-body">
+          <div class="text-content">
+            <div class="macro-section">
+              <div class="macro-title">一、宏观经济与货币政策</div>
+              <p><strong>美联储政策分歧显现</strong>，利率路径不确定性上升。内部对利率政策存在显著分歧，部分官员认为有"强劲理由"在利率路径表述中采用双向语言。</p>
+              <ul class="macro-list">
+                <li>多数官员担忧长期战争可能抑制美国就业市场复苏</li>
+                <li>多位官员指出，若发生石油供应冲击，可能导致通胀进一步上行</li>
+              </ul>
+            </div>
+
+            <div class="callout warning">
+              <span class="callout-icon">⚠️</span>
+              <div class="callout-content">
+                <strong>美伊达成两周临时停火协议</strong>，霍尔木兹海峡恢复通航。布伦特原油单日跌幅扩大至17%，报90.63美元/桶；WTI原油失守110美元/桶，日内跌2.86%；现货黄金站上4700美元/盎司，日内涨1.12%。
+              </div>
+            </div>
+
+            <div class="macro-section">
+              <div class="macro-title">二、全球金融市场表现</div>
+              <ul class="macro-list">
+                <li>欧洲斯托克600指数收涨3.68%，德国DAX30暴涨5.13%</li>
+                <li>A股强势反弹，创业板指涨5.91%，成交额放量至2.45万亿元</li>
+                <li>欧元兑美元突破1.16，日内涨0.50%</li>
+              </ul>
+            </div>
+
+            <div class="macro-section">
+              <div class="macro-title">三、行业与公司动态</div>
+              <ul class="macro-list">
+                <li>天华新能Q1净利润同比暴增27517%~32120%</li>
+                <li>智谱发布GLM-5.1，首次超越Opus 4.6</li>
+                <li>桂冠电力Q1发电量同比增49.05%，水电增57.59%</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sina Summary Agent -->
+    <section class="section animate delay-3">
+      <div class="section-header">
+        <div class="section-label">Sina Summary Agent</div>
+        <h2 class="section-title">市场综合信息</h2>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <span class="card-title">市场信息综合摘要</span>
+          <span class="card-meta">2026年4月8日—4月9日</span>
+        </div>
+        <div class="card-body">
+          <div class="text-content">
+            <div class="macro-section">
+              <div class="macro-title">核心地缘政治事件：美伊达成临时停火协议</div>
+              <p>美国与伊朗于4月8日宣布达成为期两周的临时停火协议。伊朗将重新开放霍尔木兹海峡航运，美国则暂停对伊朗的军事打击行动。</p>
+              <ul class="macro-list">
+                <li>白宫新闻秘书称此成果为"史无前例的军事胜利"</li>
+                <li>美伊首轮正式会谈定于4月12日在伊斯兰堡举行</li>
+                <li>以色列宣布暂停对伊朗袭击，但继续在黎巴嫩作战</li>
+              </ul>
+            </div>
+
+            <div class="macro-section">
+              <div class="macro-title">全球金融市场反应</div>
+              <ul class="macro-list">
+                <li><strong>亚太市场：</strong>日经225涨5.39%，韩国KOSPI涨6.87%触发熔断，A股创业板指暴涨5.91%</li>
+                <li><strong>欧美市场：</strong>德国DAX期货涨5.2%，欧洲斯托克50期货涨5.3%</li>
+                <li><strong>原油：</strong>WTI暴跌14.3%至97美元/桶以下，布伦特跌13.6%</li>
+                <li><strong>贵金属：</strong>黄金一度冲高至4850美元/盎司</li>
+              </ul>
+            </div>
+
+            <div class="callout success">
+              <span class="callout-icon">🚀</span>
+              <div class="callout-content">
+                <strong>科技板块强势领涨：</strong>国产GPU概念股天数智芯涨30%，获摩根大通首予"增持"；寒武纪涨9%，DeepSeek发布V4模型推动AI板块爆发；A股创业板人工智能ETF暴涨9.69%，资金流入超2亿元。
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Risk Section -->
+    <section class="section animate delay-4">
+      <div class="section-header">
+        <div class="section-label">Risk Analysis</div>
+        <h2 class="section-title">风险提示</h2>
+      </div>
+      <div class="card">
+        <table class="risk-table">
+          <thead>
+            <tr>
+              <th style="width: 48px;">序号</th>
+              <th>风险类型</th>
+              <th>详细说明</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><span class="risk-num">1</span></td>
+              <td>
+                <div class="risk-title">地缘政治反复风险</div>
+              </td>
+              <td>
+                <div class="risk-desc">美伊停火仅为期两周，以色列与黎巴嫩真主党矛盾未解，霍尔木兹海峡通行安全仍存隐患。</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="risk-num">2</span></td>
+              <td>
+                <div class="risk-title">油价波动加剧</div>
+              </td>
+              <td>
+                <div class="risk-desc">战略储备补库、保险成本上升与供应不确定性或限制油价下行空间。</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="risk-num">3</span></td>
+              <td>
+                <div class="risk-title">美联储政策摇摆</div>
+              </td>
+              <td>
+                <div class="risk-desc">就业与通胀数据若超预期，可能引发利率路径重新定价。</div>
+              </td>
+            </tr>
+            <tr>
+              <td><span class="risk-num">4</span></td>
+              <td>
+                <div class="risk-title">AI监管与知识产权争议</div>
+              </td>
+              <td>
+                <div class="risk-desc">佰维存储遭埃姆梯尔起诉专利侵权，涉案金额5000万元，反映科技领域法律风险上升。</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Disclaimer -->
+    <div class="disclaimer animate delay-4">
+      <div class="disclaimer-title">免责声明</div>
+      <p class="disclaimer-text">
+        本报告由ContestTrade数据分析系统生成，数据来源于各个数据代理的分析结果，仅供参考。不构成任何投资建议，投资者应自行承担投资风险。
+      </p>
+      <div class="disclaimer-meta">
+        报告生成时间: 2026-04-09 02:11:41 · ContestTrade v1.1.0
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.style.animationPlayState = 'running';
+        }
+      });
+    }, { threshold: 0.1 });
+
+    document.querySelectorAll('.animate').forEach(el => {
+      el.style.animationPlayState = 'paused';
+      observer.observe(el);
+    });
+  </script>
+</body>
+</html>

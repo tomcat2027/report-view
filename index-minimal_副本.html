@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ContestTrade 投资报告</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #fafaf9;
+      --text: #1c1917;
+      --text-light: #78716c;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --border: #e7e5e4;
+      --card: #ffffff;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-weight: 300;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header */
+    header {
+      padding: 120px 0 80px;
+      text-align: center;
+    }
+
+    .date {
+      font-size: 11px;
+      letter-spacing: 3px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 24px;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 48px;
+      font-weight: 400;
+      letter-spacing: -1px;
+      margin-bottom: 16px;
+    }
+
+    .subtitle {
+      font-size: 14px;
+      color: var(--text-light);
+      font-weight: 300;
+    }
+
+    /* Divider */
+    .divider {
+      width: 40px;
+      height: 1px;
+      background: var(--accent);
+      margin: 48px auto;
+    }
+
+    /* Stats */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 64px;
+      padding: 48px 0;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      margin-bottom: 80px;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-family: 'Playfair Display', serif;
+      font-size: 36px;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-light);
+      text-transform: uppercase;
+    }
+
+    /* Section */
+    .section-header {
+      margin-bottom: 48px;
+    }
+
+    .section-header h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      letter-spacing: 3px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      font-weight: 400;
+    }
+
+    /* Signal Cards */
+    .signal {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      padding: 40px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .signal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform 0.3s ease;
+    }
+
+    .signal:hover::before {
+      transform: scaleX(1);
+    }
+
+    .signal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .signal-name {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .signal-code {
+      font-family: 'Playfair Display', serif;
+      font-size: 13px;
+      color: var(--text-light);
+    }
+
+    .signal-badge {
+      display: inline-block;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--accent);
+      border: 1px solid var(--accent);
+      padding: 4px 12px;
+      margin-bottom: 16px;
+    }
+
+    .signal-meta {
+      font-size: 11px;
+      color: var(--text-light);
+      margin-bottom: 20px;
+    }
+
+    .evidence {
+      margin-bottom: 24px;
+    }
+
+    .evidence h4,
+    .risk h4 {
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+      font-weight: 400;
+    }
+
+    .evidence ul {
+      list-style: none;
+    }
+
+    .evidence li {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .evidence li::before {
+      content: '—';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    .risk ul {
+      list-style: none;
+    }
+
+    .risk li {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .risk li::before {
+      content: '·';
+      position: absolute;
+      left: 0;
+      color: var(--text-light);
+    }
+
+    /* Disclaimer */
+    .disclaimer {
+      margin-top: 80px;
+      padding: 32px 0;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-light);
+      text-align: center;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 40px 0;
+      font-size: 11px;
+      color: var(--text-light);
+      letter-spacing: 1px;
+    }
+
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 32px;
+      }
+
+      .stats {
+        flex-direction: column;
+        gap: 32px;
+      }
+
+      .signal {
+        padding: 24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <p class="date">2026年4月9日</p>
+      <h1>投资分析报告</h1>
+      <p class="subtitle">ContestTrade 智能投研系统</p>
+    </header>
+
+    <div class="divider"></div>
+
+    <section class="stats">
+      <div class="stat">
+        <div class="stat-value">4</div>
+        <div class="stat-label">数据源</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">10</div>
+        <div class="stat-label">投资信号</div>
+      </div>
+      <div class="stat">
+        <div class="stat-value">100%</div>
+        <div class="stat-label">有效率</div>
+      </div>
+    </section>
+
+    <section class="section-header">
+      <h2>推荐投资信号</h2>
+    </section>
+
+    <!-- Signal 1 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">光模块及AI算力相关中小市值股票组合</h3>
+        <span class="signal-code">光模块/AI算力</span>
+      </div>
+      <p class="signal-meta">Research Agent 0 · 6 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>美伊停火协议达成显著改善全球风险偏好，科技成长股成为领涨主线</li>
+          <li>中际旭创、新易盛等CPO概念股创历史新高，融资买入额分别达28.41亿元和32.65亿元</li>
+          <li>中信建投持续看好AI光通信环节，英伟达投资Marvell发展硅光技术</li>
+          <li>创业板人工智能ETF领涨10.45%，资金从地缘敏感板块转向科技成长领域</li>
+          <li>A股融资余额单日增加161.30亿元，高风险偏好资金入场</li>
+          <li>机构资金集中流向通信及半导体领域，香农芯创获机构净买入2.57亿元</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>美伊停火谈判将于4月10日开启，若破裂可能再度引爆市场波动</li>
+          <li>部分光模块个股已创历史新高，短期存在技术性回调压力</li>
+          <li>融资资金推动的上涨若遇政策收紧可能出现快速回撤</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 2 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">锂电材料业绩预增中小市值股票组合</h3>
+        <span class="signal-code">锂电新能源</span>
+      </div>
+      <p class="signal-meta">Research Agent 0 · 5 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>天华新能一季度净利润预计达9亿元，同比增超275倍，暂列A股"预增王"</li>
+          <li>中伟新材一季度归母净利润预增72.32%~91.82%至5.3亿–5.9亿元</li>
+          <li>碳酸锂上游政策收紧，津巴布韦重申锂矿出口禁令将持续强化</li>
+          <li>新能源板块强劲复苏，与AI算力并列市场主线</li>
+          <li>美伊停火缓解全球供应链担忧，新能源车产业链需求预期改善</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>一季度业绩预增已部分反映在股价中，需警惕利好出尽</li>
+          <li>各国锂矿政策变化可能影响产业链格局</li>
+          <li>镍价、锂价波动直接影响企业盈利能力</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 3 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">半导体复苏相关中小市值股票组合</h3>
+        <span class="signal-code">半导体</span>
+      </div>
+      <p class="signal-meta">Research Agent 0 · 5 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>半导体指数4月8日大涨，存储芯片、算力租赁板块跟涨</li>
+          <li>兆易创新获融资买入28.68亿元，显示资金高度关注</li>
+          <li>中信证券指出全球风险资产预期锚定趋于稳定</li>
+          <li>机构资金集中流向半导体领域，振华股份获机构净买入7.68亿元</li>
+          <li>AI算力需求爆发带动半导体产业链景气度上行</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>半导体行业仍处周期波动中，复苏力度存在不确定性</li>
+          <li>AI算力技术路线变化可能影响相关芯片需求</li>
+          <li>寒武纪333万股限售股将于4月16日解禁</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 4 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">保险及银行大盘蓝筹股组合</h3>
+        <span class="signal-code">金融</span>
+      </div>
+      <p class="signal-meta">Research Agent 0 · 5 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>五大险企2025年合计投资收益大增，新华保险总投资收益率达6.6%</li>
+          <li>美伊停火后市场对美联储降息预期升温，概率从14%飙升至43%</li>
+          <li>A股三大指数全线上涨，成交额显著放大至2.43万亿元</li>
+          <li>人民币汇率中间价调高31点至6.8649</li>
+          <li>数字人民币扩容至22家运营机构</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>若美联储降息不及预期，银行净息差可能承压</li>
+          <li>中国经济复苏力度影响金融企业资产质量</li>
+          <li>金融监管政策变化可能影响行业盈利模式</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 5 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">港股科技股超跌反弹组合</h3>
+        <span class="signal-code">港股科技</span>
+      </div>
+      <p class="signal-meta">Research Agent 0 · 5 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>港股4月9日低开，恒生科技指数跌1.11%，存在技术性反弹机会</li>
+          <li>4月8日港股科技股大涨，恒科指大涨5.22%，美团-W一度涨超8%</li>
+          <li>南向资金4月8日净卖出超150亿港元，短期抛压释放充分</li>
+          <li>阿里巴巴宣布启动万张芯片AI集群项目</li>
+          <li>中信证券指出港股4–5月迎估值修复</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>南向资金大幅流出可能持续压制港股表现</li>
+          <li>中美科技竞赛加剧可能影响港股科技股估值</li>
+          <li>港币汇率波动影响外资投资意愿</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 6 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">贵州茅台</h3>
+        <span class="signal-code">600519.SH</span>
+      </div>
+      <p class="signal-meta">Research Agent 1 · 2 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>美伊停火协议达成后，全球风险偏好显著改善，北向资金回流A股预期增强</li>
+          <li>4月8日A股成交额达1.5万亿元，较前日放量4616亿元</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>美联储降息预期仍存分歧，若通胀压力持续可能压制消费股估值</li>
+          <li>美伊停火仅为战术性窗口，4月10日谈判若破裂将再度引发市场波动</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 7 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">天华新能</h3>
+        <span class="signal-code">300390.SZ</span>
+      </div>
+      <p class="signal-meta">Research Agent 1 · 3 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>一季度净利润预计达9亿元，同比增超275倍，暂列A股"预增王"</li>
+          <li>碳酸锂上游政策收紧，津巴布韦重申锂矿出口禁令</li>
+          <li>资金从地缘敏感板块转向科技成长领域</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>锂电材料价格波动较大，若碳酸锂价格快速回落可能影响业绩</li>
+          <li>业绩增幅巨大但基数较低，需警惕绝对值风险</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 8 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">中际旭创</h3>
+        <span class="signal-code">300308.SZ</span>
+      </div>
+      <p class="signal-meta">Research Agent 1 · 4 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>被传已向港交所秘密递表，拟募资至少30亿美元</li>
+          <li>光模块龙头天孚通信净利润20.17亿元（+50.15%），股价一年涨超600%</li>
+          <li>中信建投持续看好AI光通信环节</li>
+          <li>豆包大模型日均Token使用量突破120万亿</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>光模块板块短期涨幅巨大，波动率可能加剧</li>
+          <li>AI算力投资存在供需错配风险</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 9 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">中国石油</h3>
+        <span class="signal-code">601857.SH</span>
+      </div>
+      <p class="signal-meta">Research Agent 1 · 3 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>美伊停火协议导致WTI原油跌破100美元/桶，超跌反弹概率上升</li>
+          <li>沙特东西向输油管道遭无人机袭击，地缘溢价仍存</li>
+          <li>澳洲联邦银行：只要海峡关闭，油价上行风险仍大于下行</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>若霍尔木兹海峡通航快速恢复，油价可能继续承压</li>
+          <li>4月10日美伊谈判若破裂将导致价格剧烈波动</li>
+          <li>公司作为权重股弹性较低，短线收益空间有限</li>
+        </ul>
+      </div>
+    </article>
+
+    <!-- Signal 10 -->
+    <article class="signal">
+      <div class="signal-badge">BUY</div>
+      <div class="signal-header">
+        <h3 class="signal-name">五粮液</h3>
+        <span class="signal-code">000858.SZ</span>
+      </div>
+      <p class="signal-meta">Research Agent 1 · 3 项支撑证据</p>
+      <div class="evidence">
+        <h4>支撑证据</h4>
+        <ul>
+          <li>美伊停火后市场风险偏好回升，消费板块重新获得资金关注</li>
+          <li>4月8日A股融资余额单日增加161.30亿元至2.57万亿元</li>
+          <li>白酒板块作为A股特色标的更易获得溢价</li>
+        </ul>
+      </div>
+      <div class="risk">
+        <h4>风险提示</h4>
+        <ul>
+          <li>白酒行业受政策影响较大</li>
+          <li>若美联储降息预期落空导致美元走强，可能压制外资配置意愿</li>
+        </ul>
+      </div>
+    </article>
+
+    <div class="disclaimer">
+      <p>本报告由ContestTrade AI系统生成，仅供参考，不构成投资建议。投资有风险，决策需谨慎。</p>
+      <p style="margin-top: 12px;">报告生成时间: 2026-04-09 09:26:44 · ContestTrade v1.0.0</p>
+    </div>
+
+    <footer>
+      <p>© 2026 ContestTrade</p>
+    </footer>
+  </div>
+</body>
+</html>

@@ -1,0 +1,1723 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>报告中心</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    :root {
+      --bg: #fafaf9;
+      --text: #1c1917;
+      --text-light: #78716c;
+      --accent: #b91c1c;
+      --accent-light: #fef2f2;
+      --border: #e7e5e4;
+      --card: #ffffff;
+    }
+
+    body {
+      font-family: 'Noto Sans SC', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.8;
+      font-weight: 300;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    ::selection { background: rgba(185, 28, 28, 0.1); }
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); }
+
+    /* ==================== 密码页 ==================== */
+    .password-page {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .password-page.hidden { display: none; }
+
+    .password-box {
+      text-align: center;
+      max-width: 320px;
+    }
+
+    .password-box h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    .password-box input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      font-size: 15px;
+      font-family: inherit;
+      text-align: center;
+      outline: none;
+      margin-bottom: 12px;
+      transition: border-color 0.2s;
+    }
+
+    .password-box input:focus { border-color: var(--accent); }
+
+    .password-box button {
+      width: 100%;
+      padding: 12px 24px;
+      background: var(--text);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .password-box button:hover { opacity: 0.85; }
+
+    .password-error {
+      color: var(--accent);
+      font-size: 13px;
+      margin-top: 12px;
+      display: none;
+    }
+
+    .password-error.show { display: block; }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      25%, 75% { transform: translateX(-6px); }
+      50% { transform: translateX(6px); }
+    }
+
+    .shake { animation: shake 0.3s ease; }
+
+    /* ==================== 主应用 ==================== */
+    .app { display: none; }
+    .app.visible { display: flex; min-height: 100vh; }
+
+    /* 左侧边栏 */
+    .sidebar {
+      width: 280px;
+      min-width: 280px;
+      background: white;
+      border-right: 1px solid var(--border);
+      padding: 32px 24px;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-header {
+      margin-bottom: 48px;
+    }
+
+    .sidebar h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 20px;
+      font-weight: 600;
+      margin-bottom: 4px;
+    }
+
+    .sidebar-subtitle {
+      font-size: 12px;
+      color: var(--text-light);
+      letter-spacing: 1px;
+    }
+
+    /* 侧边栏日期导航 */
+    .sidebar-date-nav {
+      margin-bottom: 40px;
+    }
+
+    .sidebar-date-nav label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .sidebar-date-nav input[type="date"] {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-size: 14px;
+      font-family: inherit;
+      color: var(--text);
+      background: white;
+      outline: none;
+      cursor: pointer;
+      transition: border-color 0.15s;
+    }
+
+    .sidebar-date-nav input[type="date"]:focus {
+      border-color: var(--accent);
+    }
+
+    /* 侧边栏快捷日期 */
+    .quick-dates {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 16px;
+    }
+
+    .quick-date-btn {
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--text-light);
+      text-align: left;
+      transition: all 0.15s;
+    }
+
+    .quick-date-btn:hover {
+      border-color: var(--text);
+      color: var(--text);
+    }
+
+    .quick-date-btn.active {
+      background: var(--text);
+      border-color: var(--text);
+      color: white;
+    }
+
+    /* 侧边栏类型选择 */
+    .sidebar-types {
+      margin-bottom: 40px;
+    }
+
+    .sidebar-types label {
+      display: block;
+      font-size: 10px;
+      letter-spacing: 2px;
+      color: var(--text-light);
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .type-btn {
+      display: block;
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.15s;
+      margin-bottom: 8px;
+      text-align: left;
+    }
+
+    .type-btn:hover { border-color: var(--text); color: var(--text); }
+    .type-btn.active {
+      background: var(--text);
+      border-color: var(--text);
+      color: white;
+    }
+
+    /* 侧边栏锁定 */
+    .sidebar-lock {
+      margin-top: auto;
+    }
+
+    .lock-btn {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      background: white;
+      border-radius: 4px;
+      font-size: 13px;
+      font-family: inherit;
+      cursor: pointer;
+      color: var(--text-light);
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .lock-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* 内容区 */
+    .main-content {
+      flex: 1;
+      padding: 48px 64px 80px;
+      display: flex;
+      justify-content: center;
+    }
+
+    #reportContainer {
+      width: 100%;
+      max-width: 800px;
+    }
+
+    /* 报告类型（移动端保留） */
+    .report-types {
+      display: none;
+    }
+
+    /* 加载 */
+    .loading {
+      display: flex;
+      justify-content: center;
+      padding: 80px;
+    }
+
+    .spinner {
+      width: 24px;
+      height: 24px;
+      border: 2px solid var(--border);
+      border-top-color: var(--text);
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* 空状态 */
+    .empty-state {
+      text-align: center;
+      padding: 80px 24px;
+      color: var(--text-light);
+    }
+
+    .empty-state h3 {
+      font-size: 18px;
+      font-weight: 400;
+      margin-bottom: 8px;
+    }
+
+    /* ==================== 研究报告样式 ==================== */
+    .research-report {}
+
+    /* 统计区 */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 48px;
+    }
+
+    .stat-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 24px;
+      text-align: center;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      border-color: var(--accent);
+      transform: translateY(-2px);
+    }
+
+    .stat-value {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-bottom: 4px;
+    }
+
+    .stat-card:nth-child(3) .stat-value {
+      color: var(--success);
+    }
+
+    .stat-label {
+      font-size: 11px;
+      letter-spacing: 2px;
+      color: var(--text-light);
+      text-transform: uppercase;
+    }
+
+    /* 信号区块标题 */
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 32px;
+    }
+
+    .section-header h2 {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      letter-spacing: 2px;
+    }
+
+    .section-line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* 信号卡片 */
+    .signal-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-bottom: 20px;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .signal-card:hover {
+      border-color: var(--accent);
+      transform: scale(1.01);
+    }
+
+    .signal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 16px;
+    }
+
+    .signal-badge {
+      background: var(--accent);
+      color: white;
+      padding: 4px 12px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .signal-sector {
+      font-size: 11px;
+      color: var(--text-light);
+      letter-spacing: 1px;
+    }
+
+    .signal-name {
+      font-size: 18px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .signal-code {
+      font-size: 12px;
+      color: var(--text-light);
+      margin-bottom: 16px;
+    }
+
+    /* 证据区块 */
+    .neo-evidence {
+      background: rgba(0, 240, 255, 0.05);
+      border-left: 2px solid var(--accent);
+      padding: 12px;
+      margin-bottom: 16px;
+    }
+
+    .neo-evidence p {
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .neo-evidence p:last-child {
+      margin-bottom: 0;
+    }
+
+    .neo-evidence strong {
+      color: var(--accent);
+    }
+
+    /* 风险区块 */
+    .neo-risk {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      color: var(--text-light);
+      margin-top: 12px;
+    }
+
+    .risk::before {
+      content: '⚠';
+      font-size: 10px;
+    }
+
+    /* 证据区块 */
+    .evidence {
+      background: var(--accent-light);
+      border-left: 3px solid var(--accent);
+      padding: 12px 16px;
+      margin-bottom: 16px;
+    }
+
+    .evidence p {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.6;
+      margin-bottom: 8px;
+    }
+
+    .evidence p:last-child {
+      margin-bottom: 0;
+    }
+
+    .evidence strong {
+      color: var(--accent);
+    }
+
+    /* 免责声明 */
+    .disclaimer {
+      background: var(--card);
+      border: 1px solid var(--border);
+      padding: 24px;
+      margin-top: 48px;
+      text-align: center;
+    }
+
+    .disclaimer h4 {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .disclaimer p {
+      font-size: 12px;
+      color: var(--text-light);
+    }
+
+    /* 页脚 */
+    .report-footer {
+      text-align: center;
+      padding: 32px 0;
+      font-size: 11px;
+      letter-spacing: 1px;
+      color: var(--text-light);
+    }
+
+    /* 入场动画 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .animate {
+      animation: fadeIn 0.5s ease-out forwards;
+      opacity: 0;
+    }
+
+    .delay-1 { animation-delay: 0.1s; }
+    .delay-2 { animation-delay: 0.2s; }
+    .delay-3 { animation-delay: 0.3s; }
+    .delay-4 { animation-delay: 0.4s; }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    /* ==================== 数据报告样式 ==================== */
+    .data-report {
+      font-family: 'Noto Sans SC', sans-serif;
+      color: var(--text);
+      line-height: 1.6;
+      font-size: 15px;
+    }
+
+    /* 入场动画 */
+    @keyframes liquidFadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .data-report .animate {
+      animation: liquidFadeIn 0.6s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+      opacity: 0;
+    }
+
+    .data-report .delay-1 { animation-delay: 0.1s; }
+    .data-report .delay-2 { animation-delay: 0.2s; }
+    .data-report .delay-3 { animation-delay: 0.3s; }
+    .data-report .delay-4 { animation-delay: 0.4s; }
+
+    /* 区块 */
+    .data-section {
+      margin-bottom: 36px;
+    }
+
+    .data-section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .data-section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--accent-light);
+    }
+
+    .data-section-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .data-section-badge {
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+      margin-left: auto;
+    }
+
+    /* 内容卡片 */
+    .data-content-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+    }
+
+    .data-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .data-card-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+      font-family: monospace;
+    }
+
+    .data-card-body {
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.8;
+    }
+
+    .data-card-body p {
+      margin-bottom: 14px;
+    }
+
+    .data-card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .data-card-body strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* 宏观区块 */
+    .data-macro-section {
+      margin-bottom: 24px;
+      padding-left: 20px;
+      border-left: 3px solid var(--border);
+    }
+
+    .data-macro-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .data-macro-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .data-macro-content {
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+
+    .data-macro-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .data-macro-list li {
+      padding: 5px 0;
+      padding-left: 18px;
+      position: relative;
+      font-size: 13px;
+    }
+
+    .data-macro-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* 免责声明 */
+    .data-disclaimer {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 40px;
+    }
+
+    .data-disclaimer-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .data-disclaimer-text {
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .data-disclaimer-meta {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-light);
+      display: flex;
+      gap: 20px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .data-content-card {
+        padding: 20px;
+      }
+      .data-section-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+      }
+      .data-section-title {
+        font-size: 18px;
+      }
+    }
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 16px 24px;
+      margin-bottom: 32px;
+      flex-wrap: wrap;
+    }
+
+    .data-stat-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .data-stat-icon {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      background: var(--accent-light);
+    }
+
+    .data-stat-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .data-stat-label {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-light);
+    }
+
+    .data-stat-value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .data-stat-divider {
+      width: 1px;
+      height: 28px;
+      background: var(--border);
+    }
+
+    /* 区块 */
+    .data-section {
+      margin-bottom: 36px;
+    }
+
+    .data-section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+
+    .data-section-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      background: var(--accent-light);
+    }
+
+    .data-section-title {
+      font-size: 20px;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .data-section-badge {
+      font-size: 11px;
+      padding: 5px 12px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+      margin-left: auto;
+    }
+
+    /* 内容卡片 */
+    .data-content-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .data-card-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .data-card-tag {
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: var(--accent-light);
+      color: var(--accent);
+      font-weight: 500;
+      font-family: monospace;
+    }
+
+    .data-card-body {
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.8;
+    }
+
+    .data-card-body p {
+      margin-bottom: 14px;
+    }
+
+    .data-card-body p:last-child {
+      margin-bottom: 0;
+    }
+
+    .data-card-body strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* 宏观区块 */
+    .data-macro-section {
+      margin-bottom: 24px;
+      padding-left: 20px;
+      border-left: 3px solid var(--border);
+    }
+
+    .data-macro-section:last-child {
+      margin-bottom: 0;
+    }
+
+    .data-macro-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+      color: var(--text);
+    }
+
+    .data-macro-content {
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+
+    .data-macro-list {
+      list-style: none;
+      margin-top: 10px;
+    }
+
+    .data-macro-list li {
+      padding: 5px 0;
+      padding-left: 18px;
+      position: relative;
+      font-size: 13px;
+    }
+
+    .data-macro-list li::before {
+      content: '→';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+      font-weight: bold;
+    }
+
+    /* 风险区块 */
+    .data-risk-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px 28px;
+    }
+
+    .data-risk-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .data-risk-item:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+    }
+
+    .data-risk-number {
+      width: 26px;
+      height: 26px;
+      background: var(--accent-light);
+      color: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .data-risk-text {
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .data-risk-text strong {
+      color: var(--text);
+    }
+
+    /* 列表 */
+    .data-list {
+      list-style: none;
+      margin: 14px 0;
+    }
+
+    .data-list li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: var(--text-light);
+      line-height: 1.7;
+    }
+
+    .data-list li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--accent);
+    }
+
+    /* 免责声明 */
+    .data-disclaimer {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 24px;
+      margin-top: 40px;
+    }
+
+    .data-disclaimer-title {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-light);
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .data-disclaimer-text {
+      font-size: 13px;
+      color: var(--text-light);
+      line-height: 1.6;
+    }
+
+    .data-disclaimer-meta {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+      color: var(--text-light);
+      display: flex;
+      gap: 20px;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+      .data-header {
+        padding: 20px;
+      }
+      .data-header h1 {
+        font-size: 26px;
+      }
+      .data-stats-bar {
+        gap: 12px;
+        padding: 12px 16px;
+      }
+      .data-stat-divider {
+        display: none;
+      }
+      .data-content-card {
+        padding: 20px;
+      }
+      .data-section-icon {
+        width: 36px;
+        height: 36px;
+        font-size: 16px;
+      }
+      .data-section-title {
+        font-size: 18px;
+      }
+    }
+
+    /* 响应式 - 移动端 */
+    @media (max-width: 768px) {
+      .app { flex-direction: column; }
+      .sidebar {
+        width: 100%;
+        min-width: 100%;
+        height: auto;
+        position: relative;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        padding: 20px 16px;
+      }
+      .sidebar-header { margin-bottom: 24px; }
+      .sidebar-date-nav { margin-bottom: 24px; }
+      .sidebar-types { margin-bottom: 24px; }
+      .sidebar-lock { margin-top: 0; }
+      .quick-dates { flex-direction: row; flex-wrap: wrap; }
+      .quick-date-btn { flex: 1; min-width: 60px; text-align: center; padding: 8px; font-size: 12px; }
+      .main-content { padding: 24px 16px 60px; }
+      .report-header { padding: 40px 0 32px; }
+      .report-header h1 { font-size: 28px; }
+      .stats { flex-direction: column; gap: 28px; }
+      .signal-card { padding: 24px; }
+      .signal-header { flex-direction: column; gap: 8px; }
+    }
+  </style>
+</head>
+<body>
+  <!-- 密码页 -->
+  <div class="password-page" id="passwordPage">
+    <div class="password-box">
+      <h1>报告中心</h1>
+      <input type="password" id="passwordInput" placeholder="输入密码" autocomplete="off">
+      <button id="passwordBtn">进入</button>
+      <div class="password-error" id="passwordError">密码错误</div>
+    </div>
+  </div>
+
+  <!-- 主应用 -->
+  <div class="app" id="app">
+    <!-- 左侧边栏 -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>报告中心</h1>
+        <p class="sidebar-subtitle">ContestTrade</p>
+      </div>
+
+      <div class="sidebar-date-nav">
+        <label>选择日期</label>
+        <input type="date" id="datePicker">
+        <div class="quick-dates" id="quickDates"></div>
+      </div>
+
+      <div class="sidebar-types">
+        <label>报告类型</label>
+        <div id="reportTypes"></div>
+      </div>
+
+      <div class="sidebar-lock">
+        <button class="lock-btn" id="lockBtn">🔒 重新锁定</button>
+      </div>
+    </aside>
+
+    <!-- 右侧主内容 -->
+    <main class="main-content">
+      <div id="reportContainer">
+        <div class="loading" id="loadingState">
+          <div class="spinner"></div>
+        </div>
+        <div class="empty-state" id="emptyState" style="display:none">
+          <h3>暂无报告</h3>
+          <p id="emptyMessage">该日期暂无报告</p>
+        </div>
+        <div id="reportContent"></div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const CONFIG = {
+      password: "report2026",
+      sessionKey: "reportHub_session",
+      sessionDuration: 86400000,
+      reportDirs: ["data_reports", "research_reports"],
+      reportLabels: { data_reports: "数据分析", research_reports: "研究策略" }
+    };
+
+    let allReports = [];
+    let currentDate = "";
+    let currentType = "";
+    let availableDates = [];
+
+    // 工具
+    async function hashPassword(pwd) {
+      const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(pwd));
+      return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, "0")).join("");
+    }
+
+    function formatDate(d) {
+      const y = d.getFullYear(), m = String(d.getMonth() + 1).padStart(2, "0"), day = String(d.getDate()).padStart(2, "0");
+      return `${y}-${m}-${day}`;
+    }
+
+    function formatDisplayDate(s) {
+      const [y, m, d] = s.split("-");
+      return `${y}年${parseInt(m)}月${parseInt(d)}日`;
+    }
+
+    function formatFullDate(d) {
+      return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日`;
+    }
+
+    // Session
+    function checkSession() {
+      const s = localStorage.getItem(CONFIG.sessionKey);
+      return s && (Date.now() - JSON.parse(s).timestamp < CONFIG.sessionDuration);
+    }
+
+    async function validatePassword(pwd) {
+      return await hashPassword(pwd) === await hashPassword(CONFIG.password);
+    }
+
+    // 加载报告
+    async function loadReports() {
+      const reports = [];
+      for (const dir of CONFIG.reportDirs) {
+        try {
+          const res = await fetch(dir + "/");
+          const text = await res.text();
+          const doc = new DOMParser().parseFromString(text, "text/html");
+          doc.querySelectorAll("a").forEach(a => {
+            const href = a.getAttribute("href");
+            if (href && href.endsWith(".md")) {
+              const dm = href.match(/(\d{4}-\d{2}-\d{2})/);
+              if (dm) reports.push({ path: `${dir}/${href}`, dir, date: dm[1], filename: href });
+            }
+          });
+        } catch (e) {}
+      }
+      return reports.sort((a, b) => b.date.localeCompare(a.date));
+    }
+
+    function getAvailableDates() {
+      return [...new Set(allReports.map(r => r.date))].sort().reverse();
+    }
+
+    function hasDate(date) {
+      return availableDates.includes(date);
+    }
+
+    // 渲染快捷日期按钮
+    function renderQuickDates() {
+      const container = document.getElementById("quickDates");
+      const datesToShow = availableDates.slice(0, 7);
+
+      container.innerHTML = datesToShow.map(date => {
+        const today = formatDate(new Date());
+        const isToday = date === today;
+        const label = isToday ? '今天' : formatDisplayDate(date).replace('年', '/').replace('月', '/').replace('日', '');
+        return `<button class="quick-date-btn ${date === currentDate ? 'active' : ''}" data-date="${date}">${label}</button>`;
+      }).join("");
+
+      container.querySelectorAll(".quick-date-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentDate = btn.dataset.date;
+          document.getElementById("datePicker").value = currentDate;
+          renderQuickDates();
+          initForDate();
+        });
+      });
+    }
+
+    // 渲染类型按钮
+    function renderTypeButtons() {
+      const types = [...new Set(allReports.filter(r => r.date === currentDate).map(r => r.dir))];
+      const container = document.getElementById("reportTypes");
+
+      if (types.length <= 1) {
+        container.innerHTML = "";
+        currentType = types[0] || "";
+        return;
+      }
+
+      if (!currentType || !types.includes(currentType)) {
+        currentType = types[0];
+      }
+
+      container.innerHTML = types.map(type => {
+        const label = CONFIG.reportLabels[type] || type;
+        return `<button class="type-btn ${type === currentType ? 'active' : ''}" data-type="${type}">${label}</button>`;
+      }).join("");
+
+      container.querySelectorAll(".type-btn").forEach(btn => {
+        btn.addEventListener("click", () => {
+          currentType = btn.dataset.type;
+          renderTypeButtons();
+          loadReport();
+        });
+      });
+    }
+
+    // 渲染研究报告
+    function renderResearchReport(text, date) {
+      const lines = text.split('\n');
+      let html = '<div class="research-report">';
+
+      // 提取摘要信息
+      let stats = { signals: '0', sources: '0', rate: '0%' };
+      const statsMatch = text.match(/\*\*研究信号数量\*\*:\s*(\d+)/);
+      const sourcesMatch = text.match(/\*\*数据源数量\*\*:\s*(\d+)/);
+      const rateMatch = text.match(/\*\*信号有效率\*\*:\s*([\d.]+%)/);
+      if (statsMatch) stats.signals = statsMatch[1];
+      if (sourcesMatch) stats.sources = sourcesMatch[1];
+      if (rateMatch) stats.rate = rateMatch[1];
+
+      // 统计区
+      html += `
+        <section class="stats-grid animate delay-1">
+          <div class="stat-card">
+            <div class="stat-value">${stats.sources}</div>
+            <div class="stat-label">数据源</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${stats.signals}</div>
+            <div class="stat-label">投资信号</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${stats.rate}</div>
+            <div class="stat-label">有效率</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${stats.signals}</div>
+            <div class="stat-label">买入信号</div>
+          </div>
+        </section>
+      `;
+
+      // 查找信号区块
+      const signalBlocks = [];
+      let currentBlock = null;
+      let currentSection = '';
+
+      lines.forEach((line, i) => {
+        // 匹配股票信号标题
+        const signalMatch = line.match(/^####\s*(\d+)\.\s*(.+?)\s*\(([^)]+)\)/);
+        if (signalMatch) {
+          if (currentBlock) signalBlocks.push(currentBlock);
+          currentBlock = {
+            name: signalMatch[2],
+            code: signalMatch[3],
+            action: '',
+            source: '',
+            evidence: [],
+            risks: []
+          };
+          currentSection = '';
+          return;
+        }
+
+        if (currentBlock) {
+          // 投资动作
+          if (line.includes('**投资动作**')) {
+            currentBlock.action = line.replace(/.*\*\*投资动作\*\*:\s*\*\*(.+?)\*\*/, '$1').toUpperCase();
+          }
+          // 分析来源
+          if (line.includes('**分析来源**')) {
+            currentBlock.source = line.replace(/.*\*\*分析来源\*\*:\s*(.+)/, '$1').trim();
+          }
+          // 支撑证据
+          if (line.includes('**支撑证据**')) {
+            currentSection = 'evidence';
+            return;
+          }
+          // 风险提示
+          if (line.includes('**风险提示**')) {
+            currentSection = 'risk';
+            return;
+          }
+          // 证据项
+          if (currentSection === 'evidence' && line.match(/^\s*\d+\.\s+\*\*(.+?)\*\*/)) {
+            const match = line.match(/^\s*\d+\.\s+\*\*(.+?)\*\*/);
+            if (match) {
+              // 提取证据内容，移除来源信息
+              let evidence = match[1];
+              evidence = evidence.replace(/\(来源:.*?\)/g, '').replace(/时间:.*$/, '').trim();
+              currentBlock.evidence.push(evidence);
+            }
+          }
+          // 风险项
+          if (currentSection === 'risk' && line.match(/^\s*-\s+(.+)/)) {
+            const risk = line.replace(/^\s*-\s+/, '').replace(/\*\*/g, '').trim();
+            currentBlock.risks.push(risk);
+          }
+        }
+      });
+      if (currentBlock) signalBlocks.push(currentBlock);
+
+      // 渲染信号区块
+      if (signalBlocks.length > 0) {
+        html += `
+          <div class="section-header animate delay-2">
+            <h2>推荐投资信号</h2>
+            <div class="section-line"></div>
+          </div>
+        `;
+
+        signalBlocks.forEach((block, idx) => {
+          const delayClass = `delay-${Math.min(idx + 2, 4)}`;
+          html += `
+            <article class="signal-card animate ${delayClass}">
+              <div class="signal-header">
+                <span class="signal-badge">${block.action || 'BUY'}</span>
+                <span class="signal-sector">${block.source || 'Research Agent'}</span>
+              </div>
+              <h3 class="signal-name">${block.name}</h3>
+              <p class="signal-code">${block.code}</p>
+              ${block.evidence.map(e => `
+                <div class="evidence">
+                  <p>${e.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')}</p>
+                </div>
+              `).join('')}
+              ${block.risks.map(r => `
+                <div class="risk">${r.replace(/\*\*(.+?)\*\*/g, '')}</div>
+              `).join('')}
+            </article>
+          `;
+        });
+      }
+
+      // 免责声明
+      const disclaimerMatch = text.match(/## ⚠️ 免责声明\n([\s\S]+?)\n\*\*报告生成时间\*\*:(.+?)\n\*\*(.+?)\*\*/);
+      if (disclaimerMatch) {
+        html += `
+          <div class="disclaimer animate delay-4">
+            <h4>免责声明</h4>
+            <p>${disclaimerMatch[1].trim()}</p>
+            <p style="margin-top: 8px; opacity: 0.7;">报告生成时间: ${disclaimerMatch[2].trim()} · ${disclaimerMatch[3].trim()}</p>
+          </div>
+        `;
+      }
+
+      html += '</div>';
+
+      return html;
+    }
+
+    // 渲染数据报告
+    function renderDataReport(text, date) {
+      const lines = text.split('\n');
+      let html = '<div class="data-report">';
+
+      // 提取数据指标
+      const zhangtingMatch = text.match(/涨停股[达]?(\d+)/);
+      const jigouMatch = text.match(/机构[参与|净买入]?(\d+\.?\d*)[亿]?[元]?/);
+      const longhuMatch = text.match(/龙虎榜.*?(\d+)/);
+      const qingxuMatch = text.match(/情绪[为]?([\u4e00-\u9fa5]+)/);
+
+      const zhangting = zhangtingMatch ? zhangtingMatch[1] : '—';
+      const jigou = jigouMatch ? jigouMatch[1] + '亿' : '—';
+      const longhu = longhuMatch ? longhuMatch[1] : '—';
+      const qingxu = qingxuMatch ? qingxuMatch[1] : '稳定';
+
+      // 统计网格 - 与研究策略一致的样式
+      html += `
+        <section class="stats-grid animate delay-1">
+          <div class="stat-card">
+            <div class="stat-value">${zhangting}</div>
+            <div class="stat-label">涨停股</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${jigou}</div>
+            <div class="stat-label">机构净买入</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${longhu}</div>
+            <div class="stat-label">龙虎榜 (10日)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-value">${qingxu}</div>
+            <div class="stat-label">市场情绪</div>
+          </div>
+        </section>
+      `;
+
+      // 移除引用标记
+      let cleanText = text.replace(/(\[\d+\])+/g, '');
+
+      // 解析区块
+      const sections = [];
+      let currentSection = null;
+      let contentLines = [];
+
+      lines.forEach((line, i) => {
+        // 跳过头部
+        if (line.startsWith('# ') || line.startsWith('**分析时间') || line.startsWith('**分析状态') || line.startsWith('**数据代理数量')) {
+          return;
+        }
+
+        // 三级标题 = Agent Section
+        const agentMatch = line.match(/^### 📈\s*(.+)/);
+        if (agentMatch) {
+          if (currentSection) {
+            currentSection.content = contentLines.join('\n');
+            sections.push(currentSection);
+          }
+          currentSection = {
+            title: agentMatch[1],
+            content: ''
+          };
+          contentLines = [];
+          return;
+        }
+
+        // hr 分隔线
+        if (line.match(/^---$/)) {
+          return;
+        }
+
+        // 免责声明
+        if (line.includes('## ⚠️ 免责声明')) {
+          if (currentSection) {
+            currentSection.content = contentLines.join('\n');
+            sections.push(currentSection);
+            currentSection = null;
+          }
+          return;
+        }
+
+        if (line.trim()) {
+          contentLines.push(line);
+        }
+      });
+
+      if (currentSection) {
+        currentSection.content = contentLines.join('\n');
+        sections.push(currentSection);
+      }
+
+      // 渲染各个区块
+      const icons = ['📊', '🔥', '📈', '🌐'];
+      sections.forEach((section, idx) => {
+        const delayClass = `delay-${Math.min(idx + 1, 4)}`;
+        const icon = icons[idx % icons.length];
+        html += `
+          <section class="data-section animate ${delayClass}">
+            <div class="data-section-header">
+              <div class="data-section-icon">${icon}</div>
+              <h2 class="data-section-title">${section.title}</h2>
+              <span class="data-section-badge">数据代理</span>
+            </div>
+            <div class="data-content-card">
+              ${parseDataContent(section.content)}
+            </div>
+          </section>
+        `;
+      });
+
+      // 免责声明
+      const disclaimerMatch = text.match(/## ⚠️ 免责声明\n([\s\S]+?)\n\*\*报告生成时间\*\*:(.+?)\n\*\*(.+?)\*\*/);
+      if (disclaimerMatch) {
+        html += `
+          <div class="data-disclaimer animate delay-4">
+            <div class="data-disclaimer-title">免责声明</div>
+            <div class="data-disclaimer-text">${disclaimerMatch[1].trim()}</div>
+            <div class="data-disclaimer-meta">
+              <span>报告生成时间: ${disclaimerMatch[2].trim()}</span>
+              <span>系统版本: ${disclaimerMatch[3].trim()}</span>
+            </div>
+          </div>
+        `;
+      }
+
+      html += '</div>';
+      return html;
+    }
+
+    // 解析数据报告内容
+    function parseDataContent(content) {
+      if (!content.trim()) return '';
+
+      let html = '<div class="data-card-body">';
+
+      const lines = content.split('\n');
+      let macroTitle = '';
+      let pendingHtml = [];
+      let listItems = [];
+
+      const flushMacro = () => {
+        if (pendingHtml.length > 0 || listItems.length > 0) {
+          const contentHtml = pendingHtml.join('') + (listItems.length > 0 ? `<ul class="data-macro-list">${listItems.map(item => `<li>${item}</li>`).join('')}</ul>` : '');
+          if (macroTitle) {
+            html += `<div class="data-macro-section">
+              <div class="data-macro-title">${macroTitle}</div>
+              <div class="data-macro-content">${contentHtml}</div>
+            </div>`;
+            macroTitle = '';
+          } else {
+            html += contentHtml;
+          }
+          pendingHtml = [];
+          listItems = [];
+        }
+      };
+
+      lines.forEach(line => {
+        line = line.trim();
+        if (!line) {
+          flushMacro();
+          return;
+        }
+
+        // 二级标题 = 宏观区块标题
+        if (line.match(/^##\s/) && !line.includes('⚠️')) {
+          flushMacro();
+          macroTitle = line.replace(/^##\s*/, '').replace(/\*\*/g, '');
+          return;
+        }
+
+        // 分隔线
+        if (line === '---') {
+          flushMacro();
+          return;
+        }
+
+        // 列表项
+        if (line.match(/^[\*\-\+]\s+(.+)/) || line.match(/^\d+\.\s+(.+)/)) {
+          let item = line.replace(/^[\*\-\+]\s+/, '').replace(/^\d+\.\s+/, '');
+          item = item.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
+          item = item.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+          listItems.push(item);
+          return;
+        }
+
+        // 段落
+        flushMacro();
+        line = line.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
+        line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        pendingHtml.push(`<p>${line}</p>`);
+      });
+
+      flushMacro();
+      html += '</div>';
+      return html;
+    }
+
+    // 加载报告
+    async function loadReport() {
+      document.getElementById("loadingState").style.display = "flex";
+      document.getElementById("emptyState").style.display = "none";
+      document.getElementById("reportContent").innerHTML = '';
+
+      const reports = allReports.filter(r => r.date === currentDate && r.dir === currentType);
+
+      if (reports.length === 0) {
+        document.getElementById("loadingState").style.display = "none";
+        document.getElementById("emptyState").style.display = "block";
+        document.getElementById("emptyMessage").textContent = "该日期暂无报告";
+        return;
+      }
+
+      try {
+        const report = reports[0];
+        const text = await fetch(report.path).then(r => r.text());
+
+        let html;
+        if (report.dir === 'research_reports') {
+          html = renderResearchReport(text, currentDate);
+        } else {
+          html = renderDataReport(text, currentDate);
+        }
+
+        document.getElementById("loadingState").style.display = "none";
+        document.getElementById("reportContent").innerHTML = html;
+      } catch (e) {
+        document.getElementById("loadingState").style.display = "none";
+        document.getElementById("emptyState").style.display = "block";
+        document.getElementById("emptyMessage").textContent = "加载失败";
+      }
+    }
+
+    // 初始化日期
+    async function initForDate() {
+      renderTypeButtons();
+      if (currentType) {
+        await loadReport();
+      } else {
+        document.getElementById("loadingState").style.display = "none";
+        document.getElementById("emptyState").style.display = "block";
+        document.getElementById("emptyMessage").textContent = "该日期暂无报告";
+      }
+    }
+
+    // 初始化
+    async function initApp() {
+      allReports = await loadReports();
+      availableDates = getAvailableDates();
+
+      const today = formatDate(new Date());
+      currentDate = hasDate(today) ? today : availableDates[0];
+
+      // 设置日期选择器
+      const datePicker = document.getElementById("datePicker");
+      datePicker.value = currentDate;
+      datePicker.max = availableDates[0] || today; // 限制最大日期为最新
+
+      // 渲染快捷日期
+      renderQuickDates();
+      await initForDate();
+    }
+
+    // 事件
+    document.addEventListener("DOMContentLoaded", () => {
+      const pwdInput = document.getElementById("passwordInput");
+      const pwdBtn = document.getElementById("passwordBtn");
+      const pwdError = document.getElementById("passwordError");
+
+      pwdBtn.addEventListener("click", async () => {
+        const pwd = pwdInput.value.trim();
+        if (!pwd) return;
+        if (await validatePassword(pwd)) {
+          localStorage.setItem(CONFIG.sessionKey, JSON.stringify({ timestamp: Date.now() }));
+          document.getElementById("passwordPage").classList.add("hidden");
+          document.getElementById("app").classList.add("visible");
+          initApp();
+        } else {
+          pwdInput.classList.add("shake");
+          pwdError.classList.add("show");
+          setTimeout(() => { pwdInput.classList.remove("shake"); }, 300);
+        }
+      });
+
+      pwdInput.addEventListener("keypress", e => { if (e.key === "Enter") pwdBtn.click(); });
+
+      document.getElementById("lockBtn").addEventListener("click", () => {
+        localStorage.removeItem(CONFIG.sessionKey);
+        document.getElementById("app").classList.remove("visible");
+        document.getElementById("passwordPage").classList.remove("hidden");
+        pwdInput.value = "";
+        pwdError.classList.remove("show");
+      });
+
+      // 日期选择器变化
+      document.getElementById("datePicker").addEventListener("change", (e) => {
+        currentDate = e.target.value;
+        renderQuickDates();
+        initForDate();
+      });
+
+      if (checkSession()) {
+        document.getElementById("passwordPage").classList.add("hidden");
+        document.getElementById("app").classList.add("visible");
+        initApp();
+      }
+    });
+  </script>
+</body>
+</html>
