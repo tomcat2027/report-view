@@ -1761,8 +1761,6 @@
         // 处理段落
         if (pendingLines.length > 0) {
           blockContent += pendingLines.map(line => {
-            line = line.replace(/\[(\d+)\]/g, '');
-            line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             return `<p>${line}</p>`;
           }).join('');
         }
@@ -1770,8 +1768,6 @@
         // 处理列表
         if (listItems.length > 0) {
           blockContent += `<ul class="data-macro-list">${listItems.map(item => {
-            item = item.replace(/\[(\d+)\]/g, '');
-            item = item.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             return `<li>${item}</li>`;
           }).join('')}</ul>`;
         }
@@ -1804,11 +1800,20 @@
           return;
         }
 
+        // 跳过三级及更深的标题
+        if (line.match(/^#+\s/)) {
+          return;
+        }
+
         // 分隔线
         if (line === '---') {
           flushBlock();
           return;
         }
+
+        // 移除剩余的 markdown 标记，保留粗体
+        line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+        line = line.replace(/\[(\d+)\]/g, '');
 
         // 列表项
         if (line.match(/^[\*\-\+]\s+(.+)/) || line.match(/^\d+\.\s+(.+)/)) {
