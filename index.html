@@ -1577,11 +1577,19 @@
       });
       if (currentBlock) signalBlocks.push(currentBlock);
 
+      // 去重：同股票只保留第一个
+      const seen = new Set();
+      const uniqueSignals = signalBlocks.filter(block => {
+        if (seen.has(block.code)) return false;
+        seen.add(block.code);
+        return true;
+      });
+
       // 渲染信号区块（不显示标题，tab已标识）
-      if (signalBlocks.length > 0) {
+      if (uniqueSignals.length > 0) {
         html += ``;
 
-        signalBlocks.forEach((block, idx) => {
+        uniqueSignals.forEach((block, idx) => {
           html += `
             <article class="signal-card">
               <div class="signal-header">
