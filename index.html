@@ -1036,6 +1036,13 @@
       font-weight: 600;
     }
 
+    .data-card-body sup {
+      font-size: 0.7em;
+      color: var(--text-muted);
+      margin: 0 1px;
+      vertical-align: baseline;
+    }
+
     /* 宏观区块 */
     .data-macro-section {
       margin-bottom: var(--space-md);
@@ -1754,7 +1761,7 @@
         // 处理段落
         if (pendingLines.length > 0) {
           blockContent += pendingLines.map(line => {
-            line = line.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
+            line = line.replace(/\[(\d+)\]/g, '');
             line = line.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             return `<p>${line}</p>`;
           }).join('');
@@ -1763,7 +1770,7 @@
         // 处理列表
         if (listItems.length > 0) {
           blockContent += `<ul class="data-macro-list">${listItems.map(item => {
-            item = item.replace(/\[(\d+)\]/g, '<sup>$1</sup>');
+            item = item.replace(/\[(\d+)\]/g, '');
             item = item.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
             return `<li>${item}</li>`;
           }).join('')}</ul>`;
