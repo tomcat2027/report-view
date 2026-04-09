@@ -1,0 +1,12 @@
+services:
+  aireport:
+    image: tomcat2027/aireport:latest
+    container_name: aireport
+    ports:
+      - "8080:80"
+    environment:
+      - PASSWORD=report2026
+    volumes:
+      - ./data_reports:/usr/share/nginx/html/data_reports:ro
+      - ./research_reports:/usr/share/nginx/html/research_reports:ro
+    restart: unless-stopped
