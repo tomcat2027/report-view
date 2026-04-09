@@ -1807,10 +1807,16 @@
           return;
         }
 
-        // 常见子标题模式 (如 机构净买入、机构净卖出、行业利润、出口数据)
-        if (line.match(/^(机构净买入|机构净卖出|行业利润|出口数据)$/)) {
+        // 通用标题检测：短行 + 包含关键词/结尾是冒号 / 只有粗体
+        // 规则：长度<40字符，且(结尾是冒号，或是纯粗体，或是常见标题词)
+        const isTitleLike = (
+          (line.length < 40 && line.match(/[：:]$/)) ||
+          (line.match(/^\*\*.+\*\*$/) && line.length < 30) ||
+          (line.match(/^(机构净买入|机构净卖出|行业利润|出口数据|涨停情况|龙虎榜|机构资金|热钱流向|市场情绪|资金博弈|热度指标)$/))
+        );
+        if (isTitleLike) {
           flushBlock();
-          macroTitle = line;
+          macroTitle = line.replace(/\*\*/g, '');
           return;
         }
 
