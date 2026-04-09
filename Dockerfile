@@ -1,7 +1,10 @@
 FROM nginx:alpine
 RUN apk add --no-cache bash
 COPY . /usr/share/nginx/html
-RUN chmod +x /docker-entrypoint.d/*.sh 2>/dev/null || true
+
+# 配置 nginx 开启目录列表
+RUN echo 'location / { autoindex on; }' > /etc/nginx/conf.d/directory-listing.conf
+
 COPY docker-entrypoint.sh /docker-entrypoint.sh
 ENTRYPOINT ["/docker-entrypoint.sh"]
 CMD ["nginx", "-g", "daemon off;"]
