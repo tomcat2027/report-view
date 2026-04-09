@@ -1807,6 +1807,13 @@
           return;
         }
 
+        // 常见子标题模式 (如 机构净买入、机构净卖出、行业利润、出口数据)
+        if (line.match(/^(机构净买入|机构净卖出|行业利润|出口数据)$/)) {
+          flushBlock();
+          macroTitle = line;
+          return;
+        }
+
         // 跳过三级及更深的标题
         if (line.match(/^#+\s/)) {
           return;
