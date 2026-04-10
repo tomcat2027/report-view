@@ -1125,12 +1125,16 @@
         width: 100%;
       }
 
-      .header-date-nav {
-        order: 3;
-        width: 100%;
+      .main-content {
+        padding: var(--space-lg);
       }
 
-      .calendar {
+      .content-toolbar {
+        flex-wrap: wrap;
+        gap: var(--space-md);
+      }
+
+      .content-toolbar .calendar {
         position: fixed;
         top: auto;
         bottom: 0;
@@ -1140,10 +1144,7 @@
         border-radius: 16px 16px 0 0;
         max-height: 80vh;
         overflow-y: auto;
-      }
-
-      .main-content {
-        padding: var(--space-lg);
+        z-index: 1000;
       }
 
       .stats-grid {
